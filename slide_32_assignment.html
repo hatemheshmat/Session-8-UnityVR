@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session 8: Assignment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <style>
+        .assignment-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 15px;
+            min-height: 500px;
+        }
+        
+        body.dark-theme .assignment-container {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+        
+        .assignment-header {
+            text-align: center;
+            margin-bottom: 15px;
+            grid-column: 1 / -1;
+        }
+        
+        .assignment-header h2 {
+            color: #0078D7;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        body.dark-theme .assignment-header h2 {
+            color: #3a9fff;
+        }
+        
+        .assignment-header p {
+            color: #5C2D91;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        body.dark-theme .assignment-header p {
+            color: #9b6ad9;
+        }
+        
+        .assignment-section {
+            margin-bottom: 15px;
+        }
+        
+        .assignment-section.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .assignment-section h3 {
+            color: #0078D7;
+            font-size: 1.2rem;
+            margin: 0 0 10px 0;
+            border-bottom: 2px solid #0078D7;
+            padding-bottom: 5px;
+        }
+        
+        body.dark-theme .assignment-section h3 {
+            color: #3a9fff;
+            border-bottom-color: #3a9fff;
+        }
+        
+        .task-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 5px;
+        }
+        
+        .task-item {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 0.9rem;
+        }
+        
+        .task-item:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #5C2D91;
+            font-weight: bold;
+        }
+        
+        body.dark-theme .task-item:before {
+            color: #9b6ad9;
+        }
+        
+        .requirements {
+            background-color: #f0f7ff;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #0078D7;
+        }
+        
+        body.dark-theme .requirements {
+            background-color: #1a2733;
+            border-left-color: #3a9fff;
+        }
+        
+        .requirements h4 {
+            margin: 0 0 5px 0;
+            color: #0078D7;
+            font-size: 1rem;
+        }
+        
+        body.dark-theme .requirements h4 {
+            color: #3a9fff;
+        }
+        
+        .requirements ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .requirements li {
+            margin-bottom: 3px;
+        }
+        
+        .submission {
+            background-color: #f5f0ff;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #5C2D91;
+        }
+        
+        body.dark-theme .submission {
+            background-color: #231a33;
+            border-left-color: #9b6ad9;
+        }
+        
+        .submission h4 {
+            margin: 0 0 5px 0;
+            color: #5C2D91;
+            font-size: 1rem;
+        }
+        
+        body.dark-theme .submission h4 {
+            color: #9b6ad9;
+        }
+        
+        .submission p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        .submission ul {
+            margin: 5px 0;
+            padding-left: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .submission li {
+            margin-bottom: 3px;
+        }
+        
+        .deadline {
+            font-weight: bold;
+            color: #dc3545;
+        }
+        
+        body.dark-theme .deadline {
+            color: #f27685;
+        }
+        
+        .resources {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+            margin-top: 0;
+        }
+        
+        .resource-card {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-theme .resource-card {
+            background-color: #2d2d2d;
+            border-color: #444;
+        }
+        
+        .resource-card h5 {
+            margin: 0 0 5px 0;
+            color: #0078D7;
+            font-size: 0.95rem;
+        }
+        
+        body.dark-theme .resource-card h5 {
+            color: #3a9fff;
+        }
+        
+        .resource-card p {
+            margin: 0 0 5px 0;
+            font-size: 0.8rem;
+        }
+        
+        .resource-link {
+            display: inline-block;
+            color: #5C2D91;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        
+        .resource-link:hover {
+            text-decoration: underline;
+        }
+        
+        body.dark-theme .resource-link {
+            color: #9b6ad9;
+        }
+        
+        .slide-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+        }
+        
+        p {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-header">
+            <div class="section-indicator">Session 8: Basketball Grab Mini-Project (Part 2) & VR Tic-Tac-Toe</div>
+        </div>
+        
+        <div class="slide-content">
+            <div class="assignment-container">
+                <div class="assignment-header">
+                    <h2>Session 8 Assignment</h2>
+                    <p>Enhanced Basketball Game & Tic-Tac-Toe Implementation</p>
+                </div>
+                
+                <div class="assignment-section">
+                    <h3>Project Overview</h3>
+                    <p>Complete two VR mini-games: enhance the Basketball Grab project with scoring and sound effects, and implement a fully functional Tic-Tac-Toe game using arrays and game state management.</p>
+                </div>
+                
+                <div class="assignment-section">
+                    <h3>Requirements</h3>
+                    <div class="requirements">
+                        <h4>Technical Requirements</h4>
+                        <ul>
+                            <li>Unity 6 with Meta XR All-in-One SDK</li>
+                            <li>Proper implementation of arrays and game states</li>
+                            <li>TextMeshPro for all UI text elements</li>
+                            <li>World-space canvas for UI elements</li>
+                            <li>Audio feedback for game events</li>
+                            <li>Proper controller velocity calculation</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="assignment-section full-width">
+                    <h3>Tasks</h3>
+                    <ul class="task-list">
+                        <li class="task-item">Implement throw velocity calculation for basketball</li>
+                        <li class="task-item">Create hoop trigger and scoring logic</li>
+                        <li class="task-item">Add sound effects for successful shots</li>
+                        <li class="task-item">Implement ball reset mechanism</li>
+                        <li class="task-item">Create 3x3 Tic-Tac-Toe board in VR</li>
+                        <li class="task-item">Implement array-based game state tracking</li>
+                        <li class="task-item">Create win detection algorithm</li>
+                        <li class="task-item">Add visual/audio feedback for game events</li>
+                        <li class="task-item">Implement "New Game" button functionality</li>
+                        <li class="task-item">Add game state transitions (menu, playing, game over)</li>
+                    </ul>
+                </div>
+                
+                <div class="assignment-section">
+                    <h3>Submission</h3>
+                    <div class="submission">
+                        <h4>Submission Guidelines</h4>
+                        <p>Submit as .zip with all project files, README.md, and demo video (30-60s)</p>
+                        <p>Due: <span class="deadline">August 25, 2025 at 11:59 PM</span></p>
+                    </div>
+                </div>
+                
+                <div class="assignment-section">
+                    <h3>Resources</h3>
+                    <div class="resources">
+                        <div class="resource-card">
+                            <h5>Unity Documentation</h5>
+                            <p>XR Interaction Toolkit & Physics docs</p>
+                            <a href="#" class="resource-link">View Docs →</a>
+                        </div>
+                        <div class="resource-card">
+                            <h5>Meta Quest Developer Hub</h5>
+                            <p>Tools for Meta Quest development</p>
+                            <a href="#" class="resource-link">View Resources →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Responsive Footer -->
+    <div class="responsive-footer">
+        <!-- Left section -->
+        <div class="footer-left">
+            <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+            <div class="slide-counter">
+                <span id="currentSlideNum">22</span> / <span id="totalSlides">24</span>
+            </div>
+        </div>
+        
+        <!-- Center section -->
+        <div class="footer-center">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="slideProgress"></div>
+            </div>
+        </div>
+        
+        <!-- Right section -->
+        <div class="footer-right">
+            <!-- First slide button -->
+            <div class="footer-tooltip">
+                <button id="firstSlideBtn" class="footer-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <span class="tooltip-text">First Slide</span>
+            </div>
+            
+            <!-- Previous slide button -->
+            <div class="footer-tooltip">
+                <button id="prevSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="tooltip-text">Previous Slide</span>
+            </div>
+            
+            <!-- Next slide button -->
+            <div class="footer-tooltip">
+                <button id="nextSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span class="tooltip-text">Next Slide</span>
+            </div>
+            
+            <!-- Last slide button -->
+            <div class="footer-tooltip">
+                <button id="lastSlideBtn" class="footer-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <span class="tooltip-text">Last Slide</span>
+            </div>
+            
+            <!-- Theme toggle button -->
+            <div class="footer-tooltip">
+                <button id="themeBtn" class="footer-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="tooltip-text">Toggle Theme</span>
+            </div>
+            
+            <!-- Notes button -->
+            <div class="footer-tooltip">
+                <button id="notesBtn" class="footer-button">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <span class="tooltip-text">Slide Notes</span>
+            </div>
+            
+            <!-- Fullscreen button -->
+            <div class="footer-tooltip">
+                <button id="fullscreenBtn" class="footer-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <span class="tooltip-text">Fullscreen</span>
+            </div>
+            
+            <!-- Menu dropdown -->
+            <div class="footer-dropdown">
+                <div class="footer-tooltip">
+                    <button id="menuBtn" class="footer-button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="tooltip-text">Menu</span>
+                </div>
+                <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notes Panel -->
+    <div id="notesPanel" class="notes-panel">
+        <div class="notes-panel-header">
+            <h3>Slide Notes</h3>
+            <button id="closeNotesBtn" class="footer-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notes-panel-content">
+            <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+        </div>
+    </div>
+    
+    <!-- Initialize footer functionality -->
+    <script>
+        // Set current slide number and total
+        document.getElementById('currentSlideNum').textContent = 32;
+        document.getElementById('totalSlides').textContent = 36;
+        
+        // Update progress bar
+        document.getElementById('slideProgress').style.width = (32 / 36 * 100) + '%';
+        
+        // Close notes panel button
+        document.getElementById('closeNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesPanel').classList.remove('show');
+            document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+        });
+        
+        // Load saved notes if any
+        const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+        const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+        if (savedNotes) {
+            document.getElementById('slideNotes').value = savedNotes;
+        }
+        
+        // Save notes when changed
+        document.getElementById('slideNotes').addEventListener('input', function() {
+            localStorage.setItem('slideNotes_' + slideId, this.value);
+        });
+    </script>
+    
+    <script src="js/responsive-footer-fixed.js"></script>
+    <script src="js/notes-panel-fixed.js"></script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_31_assignment.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_33_resources.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_33_resources.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_31_assignment.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

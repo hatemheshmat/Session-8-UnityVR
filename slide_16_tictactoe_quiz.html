@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <link rel="stylesheet" href="css/quiz-fixed.css">
+    <style>
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-theme .quiz-container {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+        
+        .quiz-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0078D7;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        body.dark-theme .quiz-title {
+            color: #3a9fff;
+        }
+        
+        .quiz-description {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        body.dark-theme .quiz-description {
+            color: #aaa;
+        }
+        
+        .quiz-question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        body.dark-theme .quiz-question {
+            border-bottom-color: #444;
+        }
+        
+        .quiz-question:last-child {
+            border-bottom: none;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        body.dark-theme .question-text {
+            color: #ddd;
+        }
+        
+        .question-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        body.dark-theme .option-label {
+            background-color: #2d2d2d;
+        }
+        
+        .option-label:hover {
+            background-color: #e9ecef;
+        }
+        
+        body.dark-theme .option-label:hover {
+            background-color: #3d3d3d;
+        }
+        
+        .option-input {
+            margin-right: 10px;
+        }
+        
+        .option-text {
+            font-size: 0.95rem;
+        }
+        
+        .quiz-submit {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 25px;
+            background-color: #0078D7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        body.dark-theme .quiz-submit {
+            background-color: #3a9fff;
+        }
+        
+        .quiz-submit:hover {
+            background-color: #0067b8;
+        }
+        
+        body.dark-theme .quiz-submit:hover {
+            background-color: #2a8ae5;
+        }
+        
+        .result-container {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .result-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+        }
+        
+        .result-partial {
+            background-color: rgba(243, 156, 18, 0.2);
+            border: 1px solid #f39c12;
+        }
+        
+        .result-fail {
+            background-color: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+        }
+        
+        .result-text {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .result-score {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .correct-answer {
+            background-color: rgba(46, 204, 113, 0.2) !important;
+            border: 1px solid #2ecc71;
+        }
+        
+        .incorrect-answer {
+            background-color: rgba(231, 76, 60, 0.2) !important;
+            border: 1px solid #e74c3c;
+        }
+        
+        .selected-answer {
+            border: 2px solid #0078D7;
+        }
+        
+        body.dark-theme .selected-answer {
+            border-color: #3a9fff;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+            <h1 class="text-3xl font-bold unity-blue mb-2 text-center mx-auto">Tic-Tac-Toe Project Quiz</h1>
+            <p class="text-center text-gray-600 mb-4">Test your understanding of the VR Tic-Tac-Toe implementation</p>
+            
+            <div class="quiz-container">
+                <div class="quiz-title">
+                    <i class="fas fa-question-circle mr-2"></i>
+                    Knowledge Check
+                </div>
+                <p class="quiz-description">Answer the following questions to test your understanding of the VR Tic-Tac-Toe project concepts.</p>
+                
+                <form id="quizForm">
+                    <div class="quiz-question">
+                        <p class="question-text">1. Which data structure is most appropriate for storing the Tic-Tac-Toe game board state?</p>
+                        <div class="question-options">
+                            <label class="option-label">
+                                <input type="radio" name="q1" value="a" class="option-input">
+                                <span class="option-text">A) List&lt;int&gt;</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q1" value="b" class="option-input">
+                                <span class="option-text">B) Dictionary&lt;string, int&gt;</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q1" value="c" class="option-input">
+                                <span class="option-text">C) int[,] (2D array)</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q1" value="d" class="option-input">
+                                <span class="option-text">D) Stack&lt;int&gt;</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question">
+                        <p class="question-text">2. How many possible win patterns are there in a standard 3×3 Tic-Tac-Toe game?</p>
+                        <div class="question-options">
+                            <label class="option-label">
+                                <input type="radio" name="q2" value="a" class="option-input">
+                                <span class="option-text">A) 6</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q2" value="b" class="option-input">
+                                <span class="option-text">B) 8</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q2" value="c" class="option-input">
+                                <span class="option-text">C) 9</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q2" value="d" class="option-input">
+                                <span class="option-text">D) 12</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question">
+                        <p class="question-text">3. Which Unity component is used to create UI elements that face the player in 3D space?</p>
+                        <div class="question-options">
+                            <label class="option-label">
+                                <input type="radio" name="q3" value="a" class="option-input">
+                                <span class="option-text">A) Screen Space Canvas</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q3" value="b" class="option-input">
+                                <span class="option-text">B) World Space Canvas</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q3" value="c" class="option-input">
+                                <span class="option-text">C) Camera Space Canvas</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q3" value="d" class="option-input">
+                                <span class="option-text">D) Overlay Canvas</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question">
+                        <p class="question-text">4. Which XR component allows players to interact with UI buttons using a ray from their controller?</p>
+                        <div class="question-options">
+                            <label class="option-label">
+                                <input type="radio" name="q4" value="a" class="option-input">
+                                <span class="option-text">A) XR Grab Interactable</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q4" value="b" class="option-input">
+                                <span class="option-text">B) XR Direct Interactor</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q4" value="c" class="option-input">
+                                <span class="option-text">C) XR Ray Interactor</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q4" value="d" class="option-input">
+                                <span class="option-text">D) XR Socket Interactor</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question">
+                        <p class="question-text">5. What is the best approach to handle the game state in a Tic-Tac-Toe game?</p>
+                        <div class="question-options">
+                            <label class="option-label">
+                                <input type="radio" name="q5" value="a" class="option-input">
+                                <span class="option-text">A) Using multiple boolean variables</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q5" value="b" class="option-input">
+                                <span class="option-text">B) Using a state machine with an enum</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q5" value="c" class="option-input">
+                                <span class="option-text">C) Using string comparisons</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="q5" value="d" class="option-input">
+                                <span class="option-text">D) Using PlayerPrefs</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="submitQuiz" class="quiz-submit">Submit Answers</button>
+                </form>
+                
+                <div id="quizResult" class="result-container">
+                    <p class="result-text">Your score:</p>
+                    <p class="result-score">0/5</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Footer Template -->
+    <div class="responsive-footer">
+        <!-- Left section -->
+        <div class="footer-left">
+            <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+            <div class="slide-counter">
+                <span id="currentSlideNum">19</span> / <span id="totalSlides">24</span>
+            </div>
+        </div>
+        
+        <!-- Center section -->
+        <div class="footer-center">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="slideProgress"></div>
+            </div>
+        </div>
+        
+        <!-- Right section -->
+        <div class="footer-right">
+            <!-- First slide button -->
+            <div class="footer-tooltip">
+                <button id="firstSlideBtn" class="footer-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <span class="tooltip-text">First Slide</span>
+            </div>
+            
+            <!-- Previous slide button -->
+            <div class="footer-tooltip">
+                <button id="prevSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="tooltip-text">Previous Slide</span>
+            </div>
+            
+            <!-- Next slide button -->
+            <div class="footer-tooltip">
+                <button id="nextSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span class="tooltip-text">Next Slide</span>
+            </div>
+            
+            <!-- Last slide button -->
+            <div class="footer-tooltip">
+                <button id="lastSlideBtn" class="footer-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <span class="tooltip-text">Last Slide</span>
+            </div>
+            
+            <!-- Theme toggle button -->
+            <div class="footer-tooltip">
+                <button id="themeBtn" class="footer-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="tooltip-text">Toggle Theme</span>
+            </div>
+            
+            <!-- Notes button -->
+            <div class="footer-tooltip">
+                <button id="notesBtn" class="footer-button">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <span class="tooltip-text">Slide Notes</span>
+            </div>
+            
+            <!-- Fullscreen button -->
+            <div class="footer-tooltip">
+                <button id="fullscreenBtn" class="footer-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <span class="tooltip-text">Fullscreen</span>
+            </div>
+            
+            <!-- Menu dropdown -->
+            <div class="footer-dropdown">
+                <div class="footer-tooltip">
+                    <button id="menuBtn" class="footer-button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="tooltip-text">Menu</span>
+                </div>
+                <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Panel -->
+    <div id="notesPanel" class="notes-panel">
+        <div class="notes-panel-header">
+            <h3>Slide Notes</h3>
+            <button id="closeNotesBtn" class="footer-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notes-panel-content">
+            <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+        </div>
+    </div>
+
+    <!-- Initialize footer functionality -->
+    <script>
+        // Set current slide number and total
+        document.getElementById('currentSlideNum').textContent = 17;
+        document.getElementById('totalSlides').textContent = 36;
+        
+        // Update progress bar
+        document.getElementById('slideProgress').style.width = (17 / 36 * 100) + '%';
+        
+        // Close notes panel button
+        document.getElementById('closeNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesPanel').classList.remove('show');
+            document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+        });
+        
+        // Load saved notes if any
+        const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+        const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+        if (savedNotes) {
+            document.getElementById('slideNotes').value = savedNotes;
+        }
+        
+        // Save notes when changed
+        document.getElementById('slideNotes').addEventListener('input', function() {
+            localStorage.setItem('slideNotes_' + slideId, this.value);
+        });
+    </script>
+
+    <script src="js/responsive-footer-fixed.js"></script>
+    <script src="js/notes-panel-fixed.js"></script>
+    <script src="js/quiz-fixed.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const quizForm = document.getElementById('quizForm');
+            const submitButton = document.getElementById('submitQuiz');
+            const resultContainer = document.getElementById('quizResult');
+            const resultScore = resultContainer.querySelector('.result-score');
+            
+            // Correct answers
+            const correctAnswers = {
+                q1: 'c',
+                q2: 'b',
+                q3: 'b',
+                q4: 'c',
+                q5: 'b'
+            };
+            
+            submitButton.addEventListener('click', function() {
+                let score = 0;
+                let totalQuestions = Object.keys(correctAnswers).length;
+                
+                // Check each question
+                for (let question in correctAnswers) {
+                    const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                    
+                    if (selectedOption) {
+                        const optionLabels = document.querySelectorAll(`input[name="${question}"]`).forEach(input => {
+                            const label = input.closest('.option-label');
+                            
+                            // Mark selected answer
+                            if (input.checked) {
+                                label.classList.add('selected-answer');
+                                
+                                // Check if correct
+                                if (input.value === correctAnswers[question]) {
+                                    label.classList.add('correct-answer');
+                                    score++;
+                                } else {
+                                    label.classList.add('incorrect-answer');
+                                }
+                            } 
+                            // Highlight correct answer if not selected
+                            else if (input.value === correctAnswers[question]) {
+                                label.classList.add('correct-answer');
+                            }
+                            
+                            // Disable further selection
+                            input.disabled = true;
+                        });
+                    }
+                }
+                
+                // Update and show result
+                resultScore.textContent = `${score}/${totalQuestions}`;
+                
+                if (score === totalQuestions) {
+                    resultContainer.className = 'result-container result-success';
+                } else if (score >= totalQuestions / 2) {
+                    resultContainer.className = 'result-container result-partial';
+                } else {
+                    resultContainer.className = 'result-container result-fail';
+                }
+                
+                resultContainer.style.display = 'block';
+                submitButton.disabled = true;
+                submitButton.textContent = 'Quiz Completed';
+            });
+        });
+    </script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_15_break.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_17_projects_comparison.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_17_projects_comparison.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_15_break.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

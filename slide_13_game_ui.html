@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game UI Implementation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <style>
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-theme .content-card {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0078D7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        body.dark-theme .card-title {
+            color: #3a9fff;
+        }
+        
+        .card-title i {
+            margin-right: 8px;
+        }
+        
+        .step-list {
+            list-style-type: none;
+            padding-left: 0;
+            counter-reset: step-counter;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 35px;
+        }
+        
+        .step-item::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 25px;
+            height: 25px;
+            background-color: #0078D7;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        body.dark-theme .step-item::before {
+            background-color: #3a9fff;
+        }
+        
+        .step-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border-left: 4px solid #0078D7;
+            overflow-x: auto;
+        }
+        
+        body.dark-theme .code-block {
+            background-color: #2d2d2d;
+            border-left-color: #3a9fff;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        
+        .code-comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955;
+        }
+        
+        .code-keyword {
+            color: #569cd6;
+            font-weight: 600;
+        }
+        
+        .code-string {
+            color: #ce9178;
+        }
+        
+        .code-method {
+            color: #dcdcaa;
+        }
+        
+        .code-type {
+            color: #4ec9b0;
+        }
+        
+        .ui-preview {
+            width: 100%;
+            height: 250px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+            margin-top: 15px;
+            perspective: 800px;
+        }
+        
+        body.dark-theme .ui-preview {
+            background-color: #2d2d2d;
+        }
+        
+        .game-ui {
+            position: absolute;
+            width: 300px;
+            height: 150px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .game-status {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .game-button {
+            background-color: #0078D7;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        body.dark-theme .game-button {
+            background-color: #3a9fff;
+        }
+        
+        .player-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .player-x {
+            color: #e74c3c;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-right: 5px;
+        }
+        
+        .player-o {
+            color: #3498db;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-left: 5px;
+        }
+        
+        .turn-indicator {
+            width: 20px;
+            height: 20px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            margin: 0 10px;
+        }
+        
+        @keyframes turnPulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+        
+        .animated .turn-indicator {
+            animation: turnPulse 1.5s infinite;
+        }
+        
+        .ui-states {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .ui-state {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        body.dark-theme .ui-state {
+            background-color: #2d2d2d;
+        }
+        
+        .state-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #0078D7;
+        }
+        
+        body.dark-theme .state-title {
+            color: #3a9fff;
+        }
+        
+        .state-preview {
+            width: 100%;
+            height: 60px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .win-message {
+            color: #2ecc71;
+        }
+        
+        .draw-message {
+            color: #f39c12;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+            <h1 class="text-3xl font-bold unity-blue mb-2 text-center mx-auto">Game UI Implementation</h1>
+            <p class="text-center text-gray-600 mb-4">Creating user interface elements for game state display</p>
+            
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-desktop"></i>
+                        UI Setup Steps
+                    </div>
+                    
+                    <ol class="step-list">
+                        <li class="step-item">
+                            <div class="step-text">
+                                Create a World Space Canvas for the game UI
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Position the canvas above or next to the game board
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Add a Panel component as a background
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Add TextMeshPro components for game status and player turn
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Add a Button component for the "New Game" functionality
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Create visual indicators for current player's turn
+                            </div>
+                        </li>
+                    </ol>
+                    
+                    <div class="ui-preview animated">
+                        <div class="game-ui">
+                            <div class="player-indicator">
+                                <div class="player-x">X</div>
+                                <div class="turn-indicator"></div>
+                                <div class="player-o">O</div>
+                            </div>
+                            <div class="game-status">Player X's Turn</div>
+                            <div class="game-button">New Game</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ui-states">
+                        <div class="ui-state">
+                            <div class="state-title">Win State</div>
+                            <div class="state-preview">
+                                <div class="win-message">Player X Wins!</div>
+                            </div>
+                        </div>
+                        <div class="ui-state">
+                            <div class="state-title">Draw State</div>
+                            <div class="state-preview">
+                                <div class="draw-message">Game Draw!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-code"></i>
+                        UI Update Implementation
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><span class="code-keyword">using</span> UnityEngine;
+<span class="code-keyword">using</span> TMPro;
+<span class="code-keyword">using</span> UnityEngine.UI;
+
+<span class="code-keyword">public class</span> <span class="code-type">TicTacToeUI</span> : MonoBehaviour
+{
+    <span class="code-comment">// Reference to game manager</span>
+    <span class="code-keyword">public</span> TicTacToeManager gameManager;
+    
+    <span class="code-comment">// UI elements</span>
+    <span class="code-keyword">public</span> TextMeshProUGUI statusText;
+    <span class="code-keyword">public</span> Button newGameButton;
+    
+    <span class="code-comment">// Player turn indicators</span>
+    <span class="code-keyword">public</span> GameObject playerXIndicator;
+    <span class="code-keyword">public</span> GameObject playerOIndicator;
+    
+    <span class="code-comment">// Win/draw animations</span>
+    <span class="code-keyword">public</span> Animator winAnimator;
+    <span class="code-keyword">public</span> Animator drawAnimator;
+    
+    <span class="code-keyword">void</span> <span class="code-method">Start</span>()
+    {
+        <span class="code-comment">// Set up button listener</span>
+        newGameButton.onClick.AddListener(OnNewGameClicked);
+        
+        <span class="code-comment">// Initial UI state</span>
+        UpdateUI(TicTacToeManager.GameState.PlayerXTurn);
+    }
+    
+    <span class="code-keyword">public void</span> <span class="code-method">UpdateUI</span>(TicTacToeManager.GameState state)
+    {
+        <span class="code-comment">// Update status text based on game state</span>
+        <span class="code-keyword">switch</span> (state)
+        {
+            <span class="code-keyword">case</span> TicTacToeManager.GameState.PlayerXTurn:
+                statusText.text = "Player X's Turn";
+                playerXIndicator.SetActive(true);
+                playerOIndicator.SetActive(false);
+                <span class="code-keyword">break</span>;
+                
+            <span class="code-keyword">case</span> TicTacToeManager.GameState.PlayerOTurn:
+                statusText.text = "Player O's Turn";
+                playerXIndicator.SetActive(false);
+                playerOIndicator.SetActive(true);
+                <span class="code-keyword">break</span>;
+                
+            <span class="code-keyword">case</span> TicTacToeManager.GameState.PlayerXWin:
+                statusText.text = "Player X Wins!";
+                playerXIndicator.SetActive(true);
+                playerOIndicator.SetActive(false);
+                winAnimator.SetTrigger("Win");
+                <span class="code-keyword">break</span>;
+                
+            <span class="code-keyword">case</span> TicTacToeManager.GameState.PlayerOWin:
+                statusText.text = "Player O Wins!";
+                playerXIndicator.SetActive(false);
+                playerOIndicator.SetActive(true);
+                winAnimator.SetTrigger("Win");
+                <span class="code-keyword">break</span>;
+                
+            <span class="code-keyword">case</span> TicTacToeManager.GameState.Draw:
+                statusText.text = "Game Draw!";
+                playerXIndicator.SetActive(false);
+                playerOIndicator.SetActive(false);
+                drawAnimator.SetTrigger("Draw");
+                <span class="code-keyword">break</span>;
+        }
+    }
+    
+    <span class="code-keyword">private void</span> <span class="code-method">OnNewGameClicked</span>()
+    {
+        <span class="code-comment">// Tell the game manager to start a new game</span>
+        gameManager.StartNewGame();
+    }
+}</pre>
+                    </div>
+                    
+                    <div class="code-block mt-4">
+                        <pre><span class="code-comment">// In TicTacToeManager.cs</span>
+<span class="code-keyword">private</span> TicTacToeUI uiManager;
+
+<span class="code-keyword">void</span> <span class="code-method">Start</span>()
+{
+    <span class="code-comment">// Get UI manager reference</span>
+    uiManager = GetComponent&lt;TicTacToeUI&gt;();
+    
+    <span class="code-comment">// Initialize the game</span>
+    InitializeGame();
+}
+
+<span class="code-keyword">void</span> <span class="code-method">SetGameState</span>(GameState newState)
+{
+    currentState = newState;
+    
+    <span class="code-comment">// Update UI</span>
+    <span class="code-keyword">if</span> (uiManager != null)
+    {
+        uiManager.UpdateUI(currentState);
+    }
+    
+    <span class="code-comment">// Additional state-specific logic</span>
+    <span class="code-keyword">if</span> (currentState == GameState.PlayerXWin || 
+        currentState == GameState.PlayerOWin || 
+        currentState == GameState.Draw)
+    {
+        <span class="code-comment">// Disable further interaction with the board</span>
+        DisableBoardInteraction();
+    }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Footer Template -->
+    <div class="responsive-footer">
+        <!-- Left section -->
+        <div class="footer-left">
+            <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+            <div class="slide-counter">
+                <span id="currentSlideNum">16</span> / <span id="totalSlides">24</span>
+            </div>
+        </div>
+        
+        <!-- Center section -->
+        <div class="footer-center">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="slideProgress"></div>
+            </div>
+        </div>
+        
+        <!-- Right section -->
+        <div class="footer-right">
+            <!-- First slide button -->
+            <div class="footer-tooltip">
+                <button id="firstSlideBtn" class="footer-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <span class="tooltip-text">First Slide</span>
+            </div>
+            
+            <!-- Previous slide button -->
+            <div class="footer-tooltip">
+                <button id="prevSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="tooltip-text">Previous Slide</span>
+            </div>
+            
+            <!-- Next slide button -->
+            <div class="footer-tooltip">
+                <button id="nextSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span class="tooltip-text">Next Slide</span>
+            </div>
+            
+            <!-- Last slide button -->
+            <div class="footer-tooltip">
+                <button id="lastSlideBtn" class="footer-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <span class="tooltip-text">Last Slide</span>
+            </div>
+            
+            <!-- Theme toggle button -->
+            <div class="footer-tooltip">
+                <button id="themeBtn" class="footer-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="tooltip-text">Toggle Theme</span>
+            </div>
+            
+            <!-- Notes button -->
+            <div class="footer-tooltip">
+                <button id="notesBtn" class="footer-button">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <span class="tooltip-text">Slide Notes</span>
+            </div>
+            
+            <!-- Fullscreen button -->
+            <div class="footer-tooltip">
+                <button id="fullscreenBtn" class="footer-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <span class="tooltip-text">Fullscreen</span>
+            </div>
+            
+            <!-- Menu dropdown -->
+            <div class="footer-dropdown">
+                <div class="footer-tooltip">
+                    <button id="menuBtn" class="footer-button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="tooltip-text">Menu</span>
+                </div>
+                <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Panel -->
+    <div id="notesPanel" class="notes-panel">
+        <div class="notes-panel-header">
+            <h3>Slide Notes</h3>
+            <button id="closeNotesBtn" class="footer-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notes-panel-content">
+            <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+        </div>
+    </div>
+
+    <!-- Initialize footer functionality -->
+    <script>
+        // Set current slide number and total
+        document.getElementById('currentSlideNum').textContent = 15;
+        document.getElementById('totalSlides').textContent = 36;
+        
+        // Update progress bar
+        document.getElementById('slideProgress').style.width = (15 / 36 * 100) + '%';
+        
+        // Close notes panel button
+        document.getElementById('closeNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesPanel').classList.remove('show');
+            document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+        });
+        
+        // Load saved notes if any
+        const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+        const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+        if (savedNotes) {
+            document.getElementById('slideNotes').value = savedNotes;
+        }
+        
+        // Save notes when changed
+        document.getElementById('slideNotes').addEventListener('input', function() {
+            localStorage.setItem('slideNotes_' + slideId, this.value);
+        });
+    </script>
+
+    <script src="js/responsive-footer-fixed.js"></script>
+    <script src="js/notes-panel-fixed.js"></script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_12_win_detection.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_14_new_game.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_14_new_game.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_12_win_detection.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

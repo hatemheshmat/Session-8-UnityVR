@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session 8: Basketball Grab Mini-Project (Part 2) & VR Tic-Tac-Toe</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: url('assets/background.svg') no-repeat center center;
+            background-size: cover;
+        }
+
+        .content-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 80%;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #0078D7;
+            margin-bottom: 1rem;
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #5C2D91;
+            margin-bottom: 2rem;
+        }
+
+        .session-info {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 3rem;
+        }
+
+        .unity-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+
+        .meta-logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+
+        .logos-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+
+        .code-string {
+            color: #ce9178 !important;
+        }
+
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+
+        .code-method {
+            color: #dcdcaa !important;
+        }
+
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+
+        .code-block {
+            color: #333 !important;
+        }
+
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+<link rel="stylesheet" href="css/responsive-slides-fixed.css">
+<link rel="stylesheet" href="css/responsive-footer-fixed.css">
+<link rel="stylesheet" href="css/notes-panel-fixed.css">
+<link rel="stylesheet" href="css/dark-theme.css">
+<link rel="stylesheet" href="css/consistent-styles.css">
+</head>
+<body>
+    <div class="slide-container">
+<div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+        <div class="content-container">
+            <h1 class="title text-center mx-auto">Unity 6 VR Development</h1>
+            <h2 class="subtitle text-center mx-auto">Session 8: Basketball Grab Mini-Project (Part 2) & VR Tic-Tac-Toe</h2>
+            <p class="session-info">Advanced Interactions & Game State Management </p>
+            <p class="session-info">Done By Eng.Hatem Heshmat </p>
+
+            <div class="logos-container">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/Unity_2021.svg" alt="Unity Logo" class="unity-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Meta-Logo.png" alt="Meta Logo" class="meta-logo">
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- Responsive Footer Template -->
+<div class="responsive-footer">
+    <!-- Left section -->
+    <div class="footer-left">
+        <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+        <div class="slide-counter">
+            <span id="currentSlideNum">3</span> / <span id="totalSlides">24</span>
+        </div>
+    </div>
+
+    <!-- Center section -->
+    <div class="footer-center">
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="slideProgress"></div>
+        </div>
+    </div>
+
+    <!-- Right section -->
+    <div class="footer-right">
+        <!-- First slide button -->
+        <div class="footer-tooltip">
+            <button id="firstSlideBtn" class="footer-button">
+                <i class="fas fa-step-backward"></i>
+            </button>
+            <span class="tooltip-text">First Slide</span>
+        </div>
+
+        <!-- Previous slide button -->
+        <div class="footer-tooltip">
+            <button id="prevSlideBtn" class="footer-button">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="tooltip-text">Previous Slide</span>
+        </div>
+
+        <!-- Next slide button -->
+        <div class="footer-tooltip">
+            <button id="nextSlideBtn" class="footer-button">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <span class="tooltip-text">Next Slide</span>
+        </div>
+
+        <!-- Last slide button -->
+        <div class="footer-tooltip">
+            <button id="lastSlideBtn" class="footer-button">
+                <i class="fas fa-step-forward"></i>
+            </button>
+            <span class="tooltip-text">Last Slide</span>
+        </div>
+
+        <!-- Theme toggle button -->
+        <div class="footer-tooltip">
+            <button id="themeBtn" class="footer-button">
+                <i class="fas fa-moon"></i>
+            </button>
+            <span class="tooltip-text">Toggle Theme</span>
+        </div>
+
+        <!-- Notes button -->
+        <div class="footer-tooltip">
+            <button id="notesBtn" class="footer-button">
+                <i class="fas fa-sticky-note"></i>
+            </button>
+            <span class="tooltip-text">Slide Notes</span>
+        </div>
+
+        <!-- Fullscreen button -->
+        <div class="footer-tooltip">
+            <button id="fullscreenBtn" class="footer-button">
+                <i class="fas fa-expand"></i>
+            </button>
+            <span class="tooltip-text">Fullscreen</span>
+        </div>
+
+        <!-- Menu dropdown -->
+        <div class="footer-dropdown">
+            <div class="footer-tooltip">
+                <button id="menuBtn" class="footer-button">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span class="tooltip-text">Menu</span>
+            </div>
+            <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notes Panel -->
+<div id="notesPanel" class="notes-panel">
+    <div class="notes-panel-header">
+        <h3>Slide Notes</h3>
+        <button id="closeNotesBtn" class="footer-button">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="notes-panel-content">
+        <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+    </div>
+</div>
+
+<!-- Initialize footer functionality -->
+<script>
+    // Set current slide number and total
+    document.getElementById('currentSlideNum').textContent = 1;
+    document.getElementById('totalSlides').textContent = 36;
+
+    // Update progress bar
+    document.getElementById('slideProgress').style.width = (1 / 36 * 100) + '%';
+
+    // Close notes panel button
+    document.getElementById('closeNotesBtn').addEventListener('click', function() {
+        document.getElementById('notesPanel').classList.remove('show');
+        document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+    });
+
+    // Load saved notes if any
+    const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+    const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+    if (savedNotes) {
+        document.getElementById('slideNotes').value = savedNotes;
+    }
+
+    // Save notes when changed
+    document.getElementById('slideNotes').addEventListener('input', function() {
+        localStorage.setItem('slideNotes_' + slideId, this.value);
+    });
+</script>
+
+<script src="js/responsive-footer-fixed.js"></script>
+<script src="js/notes-panel-fixed.js"></script>
+
+    <!-- Navigation script -->
+    <script>
+
+
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_00_agenda.html';
+        });
+
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_01_basketball_review.html';
+        });
+
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_01_basketball_review.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_00_agenda.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>

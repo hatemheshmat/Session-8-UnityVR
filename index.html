@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session 8: Basketball Grab Mini-Project (Part 2) & VR Tic-Tac-Toe</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <style>
+        .presentation-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .slide-selector {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 5px 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .slide-selector.active {
+            display: block;
+        }
+        
+        .slide-selector select {
+            border: none;
+            background: transparent;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            color: #333;
+            padding: 5px;
+            outline: none;
+        }
+        
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 120, 215, 0.2);
+            border-top: 5px solid #0078D7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Dark theme for index */
+        body.dark-theme .loading-overlay {
+            background-color: rgba(18, 18, 18, 0.9);
+            color: #e0e0e0;
+        }
+        
+        body.dark-theme .slide-selector {
+            background-color: rgba(30, 30, 30, 0.8);
+        }
+        
+        body.dark-theme .slide-selector select {
+            color: #e0e0e0;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Loading presentation...</p>
+    </div>
+
+    <div class="presentation-container">
+        <iframe id="slideFrame" src="slide_00_cover.html" allowfullscreen></iframe>
+        
+        <div class="slide-selector" id="slideSelector">
+            <select id="slideSelect">
+                <option value="slide_00_cover.html">1. Cover</option>
+                <option value="slide_00_agenda.html">2. Agenda</option>
+                <option value="slide_01_basketball_review.html">3. Basketball Grab Part 1 Review</option>
+                <option value="slide_02_throw_velocity.html">4. Calculate Throw Velocity</option>
+                <option value="slide_03_velocity_script.html">5. Velocity Calculation Script</option>
+                <option value="slide_04_fine_tuning.html">6. Fine-tuning Throw Feel</option>
+                <option value="slide_05_hoop_trigger.html">7. Hoop Trigger Setup</option>
+                <option value="slide_06_score_logic.html">8. Score Logic Implementation</option>
+                <option value="slide_07_score_display.html">9. Score Display UI</option>
+                <option value="slide_08_score_manager.html">10. Score Manager Script</option>
+                <option value="slide_09_sound_setup.html">11. Sound Effects Setup</option>
+                <option value="slide_10_sound_on_score.html">12. Play Sound on Score</option>
+                <option value="slide_11_ball_reset.html">13. Ball Reset System</option>
+                <option value="slide_12_visual_polish.html">14. Visual Polish</option>
+                <option value="slide_13_complete_game.html">15. Complete Basketball Game</option>
+                <option value="slide_14_basketball_quiz.html">16. Basketball Project Quiz</option>
+                <option value="slide_15_break.html">17. Break</option>
+                <option value="slide_16_arrays_intro.html">18. Introduction to Arrays</option>
+                <option value="slide_17_array_operations.html">19. Array Operations</option>
+                <option value="slide_18_arrays_in_games.html">20. Arrays in Game Development</option>
+                <option value="slide_19_game_state.html">21. Game State Concepts</option>
+                <option value="slide_20_tictactoe_states.html">22. Tic-Tac-Toe Game States</option>
+                <option value="slide_21_state_management.html">23. State Management Script</option>
+                <option value="slide_22_tictactoe_board.html">24. Tic-Tac-Toe Board Setup</option>
+                <option value="slide_23_player_input.html">25. Player Input System</option>
+                <option value="slide_24_game_logic.html">26. Game Logic Implementation</option>
+                <option value="slide_25_game_pieces.html">27. Visual Game Pieces</option>
+                <option value="slide_26_win_detection.html">28. Win Detection Algorithm</option>
+                <option value="slide_27_new_game_button.html">29. New Game Button</option>
+                <option value="slide_28_tictactoe_demo.html">30. Complete Tic-Tac-Toe Demo</option>
+                <option value="slide_29_tictactoe_quiz.html">31. Tic-Tac-Toe Quiz</option>
+                <option value="slide_30_session_recap.html">32. Session 8 Recap</option>
+                <option value="slide_31_next_steps.html">33. Next Steps</option>
+                <option value="slide_32_assignment.html">34. Assignment</option>
+                <option value="slide_33_resources.html">35. Resources & Documentation</option>
+                <option value="slide_34_thank_you.html">36. Thank You</option>
+            </select>
+        </div>
+    </div>
+    
+    <script>
+        // Define all slides in order
+        const slides = [
+            'slide_00_cover.html',
+            'slide_00_agenda.html',
+            'slide_01_basketball_review.html',
+            'slide_02_throw_velocity.html',
+            'slide_03_velocity_script.html',
+            'slide_04_fine_tuning.html',
+            'slide_05_hoop_trigger.html',
+            'slide_06_score_logic.html',
+            'slide_07_score_display.html',
+            'slide_08_score_manager.html',
+            'slide_09_sound_setup.html',
+            'slide_10_sound_on_score.html',
+            'slide_11_ball_reset.html',
+            'slide_12_visual_polish.html',
+            'slide_13_complete_game.html',
+            'slide_14_basketball_quiz.html',
+            'slide_15_break.html',
+            'slide_16_arrays_intro.html',
+            'slide_17_array_operations.html',
+            'slide_18_arrays_in_games.html',
+            'slide_19_game_state.html',
+            'slide_20_tictactoe_states.html',
+            'slide_21_state_management.html',
+            'slide_22_tictactoe_board.html',
+            'slide_23_player_input.html',
+            'slide_24_game_logic.html',
+            'slide_25_game_pieces.html',
+            'slide_26_win_detection.html',
+            'slide_27_new_game_button.html',
+            'slide_28_tictactoe_demo.html',
+            'slide_29_tictactoe_quiz.html',
+            'slide_30_session_recap.html',
+            'slide_31_next_steps.html',
+            'slide_32_assignment.html',
+            'slide_33_resources.html',
+            'slide_34_thank_you.html'
+        ];
+        
+        // Get DOM elements
+        const slideFrame = document.getElementById('slideFrame');
+        const slideSelector = document.getElementById('slideSelector');
+        const slideSelect = document.getElementById('slideSelect');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        
+        // Current slide index
+        let currentIndex = 0;
+        
+        // Hide loading overlay when iframe loads
+        slideFrame.addEventListener('load', function() {
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 500);
+        });
+        
+        // Show loading overlay when changing slides
+        function showLoading() {
+            loadingOverlay.style.display = 'flex';
+            loadingOverlay.style.opacity = '1';
+        }
+        
+        // Update slide
+        function updateSlide() {
+            showLoading();
+            slideFrame.src = slides[currentIndex];
+            
+            // Update select dropdown
+            slideSelect.value = slides[currentIndex];
+        }
+        
+        // Navigation functions
+        function goToNextSlide() {
+            if (currentIndex < slides.length - 1) {
+                currentIndex++;
+                updateSlide();
+            }
+        }
+        
+        function goToPrevSlide() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateSlide();
+            }
+        }
+        
+        function goToSlide(index) {
+            if (index >= 0 && index < slides.length) {
+                currentIndex = index;
+                updateSlide();
+            }
+        }
+        
+        // Toggle slide selector
+        function toggleMenu() {
+            slideSelector.classList.toggle('active');
+        }
+        
+        // Event listeners
+        slideSelect.addEventListener('change', function() {
+            const selectedSlide = this.value;
+            const index = slides.indexOf(selectedSlide);
+            if (index !== -1) {
+                goToSlide(index);
+            }
+            slideSelector.classList.remove('active');
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // M key to toggle menu
+            if (e.key === 'M' || e.key === 'm') {
+                toggleMenu();
+            }
+        });
+        
+        // Listen for messages from slides
+        window.addEventListener('message', function(event) {
+            if (event.data.action === 'navigate') {
+                if (event.data.direction === 'next') {
+                    goToNextSlide();
+                } else if (event.data.direction === 'prev') {
+                    goToPrevSlide();
+                } else if (event.data.direction === 'home') {
+                    goToSlide(0);
+                }
+            } else if (event.data.action === 'toggleMenu') {
+                toggleMenu();
+            } else if (event.data.action === 'toggleTheme') {
+                document.body.classList.toggle('dark-theme');
+            }
+        });
+        
+        // Initialize
+        updateSlide();
+    </script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_00_agenda.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_00_agenda.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_34_thank_you.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

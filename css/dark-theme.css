@@ -1,0 +1,120 @@
+/* Dark Theme Styles */
+body.dark-theme {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-theme .slide-container {
+    background: url('../assets/background-dark.svg') no-repeat center center;
+    background-size: cover;
+}
+
+body.dark-theme .unity-blue {
+    color: #4fc3f7;
+}
+
+body.dark-theme .meta-purple {
+    color: #b39ddb;
+}
+
+body.dark-theme .concept-card {
+    background: #1e1e1e;
+    border-left: 4px solid #4fc3f7;
+}
+
+body.dark-theme .concept-card:hover {
+    background: #2d2d2d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .hierarchy-container {
+    background: #1e1e1e;
+    border: 2px solid #333;
+}
+
+body.dark-theme .hierarchy-item:hover {
+    background: #2d2d2d;
+}
+
+body.dark-theme .hierarchy-item.script {
+    background: #0d47a1;
+    border-left: 4px solid #4fc3f7;
+}
+
+body.dark-theme .hierarchy-item.script:hover {
+    background: #1565c0;
+}
+
+body.dark-theme .code-snippet {
+    background: #1a1a1a;
+    color: #e0e0e0;
+}
+
+body.dark-theme .highlight-blue {
+    color: #64b5f6;
+}
+
+body.dark-theme .highlight-green {
+    color: #81c784;
+}
+
+body.dark-theme .highlight-yellow {
+    color: #ffd54f;
+}
+
+body.dark-theme .part-badge {
+    background: linear-gradient(135deg, #0277bd, #7b1fa2);
+}
+
+body.dark-theme h1, 
+body.dark-theme h2, 
+body.dark-theme h3, 
+body.dark-theme h4, 
+body.dark-theme h5, 
+body.dark-theme h6 {
+    color: #e0e0e0;
+}
+
+body.dark-theme p {
+    color: #b0b0b0;
+}
+
+body.dark-theme .bg-blue-50 {
+    background-color: #0d47a1;
+}
+
+body.dark-theme .border-blue-500 {
+    border-color: #2196f3;
+}
+
+body.dark-theme .text-gray-600,
+body.dark-theme .text-gray-700 {
+    color: #b0b0b0;
+}
+
+/* Notes panel dark theme */
+body.dark-theme .notes-panel {
+    background-color: #1e1e1e;
+    border-left: 1px solid #333;
+}
+
+body.dark-theme .notes-panel-header {
+    background-color: #0d47a1;
+}
+
+body.dark-theme .notes-panel textarea {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+
+/* Responsive footer dark theme */
+body.dark-theme .responsive-footer {
+    background: linear-gradient(to right, #0277bd, #7b1fa2);
+}
+
+/* Progress bar dark theme */
+body.dark-theme .progress-bar-container {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+

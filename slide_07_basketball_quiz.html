@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Project Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <link rel="stylesheet" href="css/quiz-fixed.css">
+    <style>
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-theme .quiz-container {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+        
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        body.dark-theme .quiz-header {
+            border-bottom-color: #4a4a4a;
+        }
+        
+        .quiz-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0078D7;
+            margin-bottom: 5px;
+        }
+        
+        body.dark-theme .quiz-title {
+            color: #3a9fff;
+        }
+        
+        .quiz-subtitle {
+            font-size: 1rem;
+            color: #5C2D91;
+        }
+        
+        body.dark-theme .quiz-subtitle {
+            color: #9b6ad9;
+        }
+        
+        .quiz-question {
+            margin-bottom: 25px;
+        }
+        
+        .question-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #0078D7;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        body.dark-theme .question-number {
+            background-color: #3a9fff;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: inline;
+        }
+        
+        .quiz-options {
+            margin-top: 10px;
+            margin-left: 40px;
+        }
+        
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quiz-option:hover {
+            background-color: rgba(0, 120, 215, 0.1);
+        }
+        
+        body.dark-theme .quiz-option:hover {
+            background-color: rgba(58, 159, 255, 0.1);
+        }
+        
+        .option-letter {
+            width: 25px;
+            height: 25px;
+            border: 2px solid #0078D7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 10px;
+            color: #0078D7;
+        }
+        
+        body.dark-theme .option-letter {
+            border-color: #3a9fff;
+            color: #3a9fff;
+        }
+        
+        .option-text {
+            font-size: 0.95rem;
+        }
+        
+        .quiz-option.selected {
+            background-color: rgba(0, 120, 215, 0.2);
+        }
+        
+        body.dark-theme .quiz-option.selected {
+            background-color: rgba(58, 159, 255, 0.2);
+        }
+        
+        .quiz-option.selected .option-letter {
+            background-color: #0078D7;
+            color: white;
+        }
+        
+        body.dark-theme .quiz-option.selected .option-letter {
+            background-color: #3a9fff;
+        }
+        
+        .quiz-option.correct {
+            background-color: rgba(46, 204, 113, 0.2);
+        }
+        
+        .quiz-option.correct .option-letter {
+            background-color: #2ecc71;
+            border-color: #2ecc71;
+            color: white;
+        }
+        
+        .quiz-option.incorrect {
+            background-color: rgba(231, 76, 60, 0.2);
+        }
+        
+        .quiz-option.incorrect .option-letter {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+            color: white;
+        }
+        
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        body.dark-theme .quiz-footer {
+            border-top-color: #4a4a4a;
+        }
+        
+        .quiz-progress {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        body.dark-theme .quiz-progress {
+            color: #aaa;
+        }
+        
+        .quiz-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .quiz-button {
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .check-button {
+            background-color: #0078D7;
+            color: white;
+        }
+        
+        .check-button:hover {
+            background-color: #0067be;
+        }
+        
+        body.dark-theme .check-button {
+            background-color: #3a9fff;
+        }
+        
+        body.dark-theme .check-button:hover {
+            background-color: #2a8fef;
+        }
+        
+        .next-button {
+            background-color: #5C2D91;
+            color: white;
+        }
+        
+        .next-button:hover {
+            background-color: #4c2577;
+        }
+        
+        body.dark-theme .next-button {
+            background-color: #9b6ad9;
+        }
+        
+        body.dark-theme .next-button:hover {
+            background-color: #8b5ac9;
+        }
+        
+        .quiz-result {
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .result-correct {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+        
+        body.dark-theme .result-correct {
+            color: #2ecc71;
+        }
+        
+        .result-incorrect {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #c0392b;
+        }
+        
+        body.dark-theme .result-incorrect {
+            color: #e74c3c;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+            <h1 class="text-3xl font-bold unity-blue mb-2 text-center mx-auto">Basketball Project Quiz</h1>
+            <p class="text-center text-gray-600 mb-4">Test your understanding of the Basketball Grab Mini-Project</p>
+            
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <div class="quiz-title">Basketball Grab Mini-Project Quiz</div>
+                    <div class="quiz-subtitle">Check your understanding of key concepts</div>
+                </div>
+                
+                <div class="quiz-content">
+                    <div class="quiz-question" id="question1">
+                        <div class="question-number">1</div>
+                        <div class="question-text">Which component is used to make the basketball grabbable in VR?</div>
+                        
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="true">
+                                <div class="option-letter">A</div>
+                                <div class="option-text">XR Grab Interactable</div>
+                            </div>
+                            <div class="quiz-option">
+                                <div class="option-letter">B</div>
+                                <div class="option-text">XR Ray Interactor</div>
+                            </div>
+                            <div class="quiz-option">
+                                <div class="option-letter">C</div>
+                                <div class="option-text">XR Direct Interactor</div>
+                            </div>
+                            <div class="quiz-option">
+                                <div class="option-letter">D</div>
+                                <div class="option-text">XR Socket Interactor</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question2">
+                        <div class="question-number">2</div>
+                        <div class="question-text">Why do we track velocity across multiple frames when implementing throwing?</div>
+                        
+                        <div class="quiz-options">
+                            <div class="quiz-option">
+                                <div class="option-letter">A</div>
+                                <div class="option-text">To reduce the ball's speed</div>
+                            </div>
+                            <div class="quiz-option" data-correct="true">
+                                <div class="option-letter">B</div>
+                                <div class="option-text">To calculate a more accurate average velocity</div>
+                            </div>
+                            <div class="quiz-option">
+                                <div class="option-letter">C</div>
+                                <div class="option-text">To increase the ball's mass</div>
+                            </div>
+                            <div class="quiz-option">
+                                <div class="option-letter">D</div>
+                                <div class="option-text">To change the ball's direction</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question3">
+                        <div class="question-number">3</div>
+                        <div class="question-text">What type of collider should be used for the hoop's score detection zone?</div>
+                        
+                        <div class="quiz-options">
+                            <div class="quiz-option">
+                                <div class="option-letter">A</div>
+                                <div class="option-text">Mesh Collider with Is Trigger = false</div>
+                            </div>
+                            <div class="quiz-option">
+                                <div class="option-letter">B</div>
+                                <div class="option-text">Box Collider with Is Trigger = false</div>
+                            </div>
+                            <div class="quiz-option" data-correct="true">
+                                <div class="option-letter">C</div>
+                                <div class="option-text">Box Collider with Is Trigger = true</div>
+                            </div>
+                            <div class="quiz-option">
+                                <div class="option-letter">D</div>
+                                <div class="option-text">Sphere Collider with Is Trigger = false</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question4">
+                        <div class="question-number">4</div>
+                        <div class="question-text">Which Canvas render mode is most appropriate for displaying the score in VR?</div>
+                        
+                        <div class="quiz-options">
+                            <div class="quiz-option">
+                                <div class="option-letter">A</div>
+                                <div class="option-text">Screen Space - Overlay</div>
+                            </div>
+                            <div class="quiz-option">
+                                <div class="option-letter">B</div>
+                                <div class="option-text">Screen Space - Camera</div>
+                            </div>
+                            <div class="quiz-option" data-correct="true">
+                                <div class="option-letter">C</div>
+                                <div class="option-text">World Space</div>
+                            </div>
+                            <div class="quiz-option">
+                                <div class="option-letter">D</div>
+                                <div class="option-text">Render Texture</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="quiz-result" id="quizResult"></div>
+                
+                <div class="quiz-footer">
+                    <div class="quiz-progress">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">4</span></div>
+                    <div class="quiz-buttons">
+                        <button class="quiz-button check-button" id="checkButton">Check Answer</button>
+                        <button class="quiz-button next-button" id="nextButton">Next Question</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Footer Template -->
+    <div class="responsive-footer">
+        <!-- Left section -->
+        <div class="footer-left">
+            <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+            <div class="slide-counter">
+                <span id="currentSlideNum">10</span> / <span id="totalSlides">24</span>
+            </div>
+        </div>
+        
+        <!-- Center section -->
+        <div class="footer-center">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="slideProgress"></div>
+            </div>
+        </div>
+        
+        <!-- Right section -->
+        <div class="footer-right">
+            <!-- First slide button -->
+            <div class="footer-tooltip">
+                <button id="firstSlideBtn" class="footer-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <span class="tooltip-text">First Slide</span>
+            </div>
+            
+            <!-- Previous slide button -->
+            <div class="footer-tooltip">
+                <button id="prevSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="tooltip-text">Previous Slide</span>
+            </div>
+            
+            <!-- Next slide button -->
+            <div class="footer-tooltip">
+                <button id="nextSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span class="tooltip-text">Next Slide</span>
+            </div>
+            
+            <!-- Last slide button -->
+            <div class="footer-tooltip">
+                <button id="lastSlideBtn" class="footer-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <span class="tooltip-text">Last Slide</span>
+            </div>
+            
+            <!-- Theme toggle button -->
+            <div class="footer-tooltip">
+                <button id="themeBtn" class="footer-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="tooltip-text">Toggle Theme</span>
+            </div>
+            
+            <!-- Notes button -->
+            <div class="footer-tooltip">
+                <button id="notesBtn" class="footer-button">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <span class="tooltip-text">Slide Notes</span>
+            </div>
+            
+            <!-- Fullscreen button -->
+            <div class="footer-tooltip">
+                <button id="fullscreenBtn" class="footer-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <span class="tooltip-text">Fullscreen</span>
+            </div>
+            
+            <!-- Menu dropdown -->
+            <div class="footer-dropdown">
+                <div class="footer-tooltip">
+                    <button id="menuBtn" class="footer-button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="tooltip-text">Menu</span>
+                </div>
+                <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Panel -->
+    <div id="notesPanel" class="notes-panel">
+        <div class="notes-panel-header">
+            <h3>Slide Notes</h3>
+            <button id="closeNotesBtn" class="footer-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notes-panel-content">
+            <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+        </div>
+    </div>
+
+    <!-- Initialize footer functionality -->
+    <script>
+        // Set current slide number and total
+        document.getElementById('currentSlideNum').textContent = 9;
+        document.getElementById('totalSlides').textContent = 36;
+        
+        // Update progress bar
+        document.getElementById('slideProgress').style.width = (9 / 36 * 100) + '%';
+        
+        // Close notes panel button
+        document.getElementById('closeNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesPanel').classList.remove('show');
+            document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+        });
+        
+        // Load saved notes if any
+        const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+        const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+        if (savedNotes) {
+            document.getElementById('slideNotes').value = savedNotes;
+        }
+        
+        // Save notes when changed
+        document.getElementById('slideNotes').addEventListener('input', function() {
+            localStorage.setItem('slideNotes_' + slideId, this.value);
+        });
+    </script>
+
+    <script src="js/responsive-footer-fixed.js"></script>
+    <script src="js/notes-panel-fixed.js"></script>
+    <script src="js/quiz-fixed.js"></script>
+    
+    <script>
+        // Quiz functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const questions = document.querySelectorAll('.quiz-question');
+            const options = document.querySelectorAll('.quiz-option');
+            const checkButton = document.getElementById('checkButton');
+            const nextButton = document.getElementById('nextButton');
+            const resultDiv = document.getElementById('quizResult');
+            const currentQuestionSpan = document.getElementById('currentQuestion');
+            const totalQuestionsSpan = document.getElementById('totalQuestions');
+            
+            let currentQuestionIndex = 0;
+            let selectedOption = null;
+            
+            // Initialize
+            totalQuestionsSpan.textContent = questions.length;
+            hideAllQuestions();
+            showQuestion(currentQuestionIndex);
+            nextButton.disabled = true;
+            nextButton.style.opacity = '0.5';
+            
+            // Option selection
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options in current question
+                    const currentQuestionOptions = questions[currentQuestionIndex].querySelectorAll('.quiz-option');
+                    currentQuestionOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    selectedOption = this;
+                });
+            });
+            
+            // Check answer
+            checkButton.addEventListener('click', function() {
+                if (!selectedOption) return;
+                
+                const isCorrect = selectedOption.hasAttribute('data-correct');
+                
+                // Show result
+                resultDiv.style.display = 'block';
+                if (isCorrect) {
+                    resultDiv.textContent = 'Correct! Well done!';
+                    resultDiv.className = 'quiz-result result-correct';
+                    selectedOption.classList.add('correct');
+                } else {
+                    resultDiv.textContent = 'Incorrect. Try again or see the correct answer.';
+                    resultDiv.className = 'quiz-result result-incorrect';
+                    selectedOption.classList.add('incorrect');
+                    
+                    // Highlight correct answer
+                    const correctOption = questions[currentQuestionIndex].querySelector('[data-correct="true"]');
+                    if (correctOption) {
+                        correctOption.classList.add('correct');
+                    }
+                }
+                
+                // Enable next button
+                nextButton.disabled = false;
+                nextButton.style.opacity = '1';
+                
+                // Disable check button
+                checkButton.disabled = true;
+                checkButton.style.opacity = '0.5';
+            });
+            
+            // Next question
+            nextButton.addEventListener('click', function() {
+                currentQuestionIndex++;
+                
+                if (currentQuestionIndex < questions.length) {
+                    hideAllQuestions();
+                    showQuestion(currentQuestionIndex);
+                    currentQuestionSpan.textContent = currentQuestionIndex + 1;
+                    
+                    // Reset
+                    selectedOption = null;
+                    resultDiv.style.display = 'none';
+                    checkButton.disabled = false;
+                    checkButton.style.opacity = '1';
+                    nextButton.disabled = true;
+                    nextButton.style.opacity = '0.5';
+                } else {
+                    // Quiz completed
+                    hideAllQuestions();
+                    resultDiv.textContent = 'Quiz completed! Great job!';
+                    resultDiv.className = 'quiz-result result-correct';
+                    resultDiv.style.display = 'block';
+                    checkButton.style.display = 'none';
+                    nextButton.style.display = 'none';
+                }
+            });
+            
+            function hideAllQuestions() {
+                questions.forEach(question => {
+                    question.style.display = 'none';
+                });
+            }
+            
+            function showQuestion(index) {
+                questions[index].style.display = 'block';
+            }
+        });
+    </script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_06_ball_reset.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_08_tictactoe_intro.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_08_tictactoe_intro.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_06_ball_reset.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

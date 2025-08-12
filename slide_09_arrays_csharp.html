@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrays in C#</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <style>
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-theme .content-card {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0078D7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        body.dark-theme .card-title {
+            color: #3a9fff;
+        }
+        
+        .card-title i {
+            margin-right: 8px;
+        }
+        
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border-left: 4px solid #0078D7;
+            overflow-x: auto;
+        }
+        
+        body.dark-theme .code-block {
+            background-color: #2d2d2d;
+            border-left-color: #3a9fff;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        
+        .code-comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955;
+        }
+        
+        .code-keyword {
+            color: #569cd6;
+            font-weight: 600;
+        }
+        
+        .code-string {
+            color: #ce9178;
+        }
+        
+        .code-method {
+            color: #dcdcaa;
+        }
+        
+        .code-type {
+            color: #4ec9b0;
+        }
+        
+        .array-visual {
+            width: 100%;
+            margin-top: 15px;
+            overflow-x: auto;
+        }
+        
+        .array-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .array-cell {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #0078D7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 5px;
+            position: relative;
+        }
+        
+        body.dark-theme .array-cell {
+            border-color: #3a9fff;
+        }
+        
+        .array-index {
+            position: absolute;
+            top: -20px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        body.dark-theme .array-index {
+            color: #aaa;
+        }
+        
+        .array-label {
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #0078D7;
+            width: 80px;
+        }
+        
+        body.dark-theme .array-label {
+            color: #3a9fff;
+        }
+        
+        .array-2d {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .array-2d-cell {
+            border: 2px solid #0078D7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        body.dark-theme .array-2d-cell {
+            border-color: #3a9fff;
+        }
+        
+        .array-2d-index {
+            position: absolute;
+            font-size: 0.7rem;
+            color: #666;
+            top: 2px;
+            left: 2px;
+        }
+        
+        body.dark-theme .array-2d-index {
+            color: #aaa;
+        }
+        
+        .array-2d-value {
+            font-size: 1.2rem;
+        }
+        
+        .array-2d-value.x {
+            color: #e74c3c;
+        }
+        
+        .array-2d-value.o {
+            color: #3498db;
+        }
+        
+        .array-2d-value.empty {
+            color: #bbb;
+            font-size: 0.8rem;
+        }
+        
+        body.dark-theme .array-2d-value.empty {
+            color: #555;
+        }
+        
+        .array-methods {
+            margin-top: 15px;
+        }
+        
+        .method-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        body.dark-theme .method-item {
+            background-color: #2d2d2d;
+        }
+        
+        .method-name {
+            font-weight: 600;
+            color: #0078D7;
+            width: 100px;
+            flex-shrink: 0;
+        }
+        
+        body.dark-theme .method-name {
+            color: #3a9fff;
+        }
+        
+        .method-desc {
+            font-size: 0.9rem;
+        }
+        
+        @keyframes highlightCell {
+            0% { background-color: transparent; }
+            50% { background-color: rgba(0, 120, 215, 0.3); }
+            100% { background-color: transparent; }
+        }
+        
+        body.dark-theme .animated .array-2d-cell {
+            animation: highlightCellDark 2s infinite;
+        }
+        
+        @keyframes highlightCellDark {
+            0% { background-color: transparent; }
+            50% { background-color: rgba(58, 159, 255, 0.2); }
+            100% { background-color: transparent; }
+        }
+        
+        .animated .array-2d-cell:nth-child(1) { animation-delay: 0s; }
+        .animated .array-2d-cell:nth-child(2) { animation-delay: 0.2s; }
+        .animated .array-2d-cell:nth-child(3) { animation-delay: 0.4s; }
+        .animated .array-2d-cell:nth-child(4) { animation-delay: 0.6s; }
+        .animated .array-2d-cell:nth-child(5) { animation-delay: 0.8s; }
+        .animated .array-2d-cell:nth-child(6) { animation-delay: 1.0s; }
+        .animated .array-2d-cell:nth-child(7) { animation-delay: 1.2s; }
+        .animated .array-2d-cell:nth-child(8) { animation-delay: 1.4s; }
+        .animated .array-2d-cell:nth-child(9) { animation-delay: 1.6s; }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+            <h1 class="text-3xl font-bold unity-blue mb-2 text-center mx-auto">Arrays in C#</h1>
+            <p class="text-center text-gray-600 mb-4">Using arrays to store game state for Tic-Tac-Toe</p>
+            
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-table-cells"></i>
+                        Array Basics
+                    </div>
+                    
+                    <p class="mb-3">Arrays are collections of elements of the same type with a fixed size. They're perfect for storing game state data like our Tic-Tac-Toe board.</p>
+                    
+                    <div class="code-block">
+                        <pre><span class="code-comment">// Declaring a 1D array</span>
+<span class="code-keyword">int</span>[] scores = <span class="code-keyword">new int</span>[5]; <span class="code-comment">// Array of 5 integers</span>
+
+<span class="code-comment">// Initializing with values</span>
+<span class="code-keyword">int</span>[] scores = <span class="code-keyword">new int</span>[] { 10, 20, 30, 40, 50 };
+
+<span class="code-comment">// Accessing elements (zero-indexed)</span>
+<span class="code-keyword">int</span> firstScore = scores[0]; <span class="code-comment">// 10</span>
+<span class="code-keyword">int</span> thirdScore = scores[2]; <span class="code-comment">// 30</span>
+
+<span class="code-comment">// Modifying elements</span>
+scores[1] = 25; <span class="code-comment">// Changes 20 to 25</span>
+
+<span class="code-comment">// Getting array length</span>
+<span class="code-keyword">int</span> length = scores.Length; <span class="code-comment">// 5</span></pre>
+                    </div>
+                    
+                    <div class="array-visual">
+                        <div class="array-row">
+                            <div class="array-label">scores:</div>
+                            <div class="array-cell">
+                                <div class="array-index">0</div>
+                                10
+                            </div>
+                            <div class="array-cell">
+                                <div class="array-index">1</div>
+                                25
+                            </div>
+                            <div class="array-cell">
+                                <div class="array-index">2</div>
+                                30
+                            </div>
+                            <div class="array-cell">
+                                <div class="array-index">3</div>
+                                40
+                            </div>
+                            <div class="array-cell">
+                                <div class="array-index">4</div>
+                                50
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-title mt-6">
+                        <i class="fas fa-code"></i>
+                        Common Array Methods
+                    </div>
+                    
+                    <div class="array-methods">
+                        <div class="method-item">
+                            <div class="method-name">Length</div>
+                            <div class="method-desc">Gets the total number of elements in the array</div>
+                        </div>
+                        <div class="method-item">
+                            <div class="method-name">GetValue()</div>
+                            <div class="method-desc">Returns the value at the specified index</div>
+                        </div>
+                        <div class="method-item">
+                            <div class="method-name">SetValue()</div>
+                            <div class="method-desc">Sets a value at the specified index</div>
+                        </div>
+                        <div class="method-item">
+                            <div class="method-name">Clone()</div>
+                            <div class="method-desc">Creates a shallow copy of the array</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-th"></i>
+                        2D Arrays for Tic-Tac-Toe
+                    </div>
+                    
+                    <p class="mb-3">For our Tic-Tac-Toe game, we'll use a 2D array to represent the 3×3 game board.</p>
+                    
+                    <div class="code-block">
+                        <pre><span class="code-comment">// Declaring a 2D array for Tic-Tac-Toe</span>
+<span class="code-keyword">int</span>[,] board = <span class="code-keyword">new int</span>[3, 3];
+
+<span class="code-comment">// Initialize with values (0=empty, 1=X, 2=O)</span>
+<span class="code-keyword">int</span>[,] board = <span class="code-keyword">new int</span>[,] {
+    { 0, 1, 2 },
+    { 0, 1, 0 },
+    { 2, 0, 0 }
+};
+
+<span class="code-comment">// Accessing elements</span>
+<span class="code-keyword">int</span> centerValue = board[1, 1]; <span class="code-comment">// Value at row 1, col 1</span>
+
+<span class="code-comment">// Modifying elements</span>
+board[0, 2] = 1; <span class="code-comment">// Place X at top-right</span>
+
+<span class="code-comment">// Getting dimensions</span>
+<span class="code-keyword">int</span> rows = board.GetLength(0); <span class="code-comment">// 3</span>
+<span class="code-keyword">int</span> cols = board.GetLength(1); <span class="code-comment">// 3</span></pre>
+                    </div>
+                    
+                    <div class="array-2d animated">
+                        <div class="array-2d-cell">
+                            <div class="array-2d-index">[0,0]</div>
+                            <div class="array-2d-value empty">0</div>
+                        </div>
+                        <div class="array-2d-cell">
+                            <div class="array-2d-index">[0,1]</div>
+                            <div class="array-2d-value x">X</div>
+                        </div>
+                        <div class="array-2d-cell">
+                            <div class="array-2d-index">[0,2]</div>
+                            <div class="array-2d-value x">X</div>
+                        </div>
+                        <div class="array-2d-cell">
+                            <div class="array-2d-index">[1,0]</div>
+                            <div class="array-2d-value empty">0</div>
+                        </div>
+                        <div class="array-2d-cell">
+                            <div class="array-2d-index">[1,1]</div>
+                            <div class="array-2d-value x">X</div>
+                        </div>
+                        <div class="array-2d-cell">
+                            <div class="array-2d-index">[1,2]</div>
+                            <div class="array-2d-value empty">0</div>
+                        </div>
+                        <div class="array-2d-cell">
+                            <div class="array-2d-index">[2,0]</div>
+                            <div class="array-2d-value o">O</div>
+                        </div>
+                        <div class="array-2d-cell">
+                            <div class="array-2d-index">[2,1]</div>
+                            <div class="array-2d-value empty">0</div>
+                        </div>
+                        <div class="array-2d-cell">
+                            <div class="array-2d-index">[2,2]</div>
+                            <div class="array-2d-value empty">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block mt-4">
+                        <pre><span class="code-comment">// Example: Checking for a win in a row</span>
+<span class="code-keyword">bool</span> <span class="code-method">CheckRowWin</span>(<span class="code-keyword">int</span> player)
+{
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> row = 0; row < 3; row++)
+    {
+        <span class="code-keyword">if</span> (board[row, 0] == player && 
+            board[row, 1] == player && 
+            board[row, 2] == player)
+        {
+            <span class="code-keyword">return true</span>;
+        }
+    }
+    <span class="code-keyword">return false</span>;
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Footer Template -->
+    <div class="responsive-footer">
+        <!-- Left section -->
+        <div class="footer-left">
+            <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+            <div class="slide-counter">
+                <span id="currentSlideNum">12</span> / <span id="totalSlides">24</span>
+            </div>
+        </div>
+        
+        <!-- Center section -->
+        <div class="footer-center">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="slideProgress"></div>
+            </div>
+        </div>
+        
+        <!-- Right section -->
+        <div class="footer-right">
+            <!-- First slide button -->
+            <div class="footer-tooltip">
+                <button id="firstSlideBtn" class="footer-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <span class="tooltip-text">First Slide</span>
+            </div>
+            
+            <!-- Previous slide button -->
+            <div class="footer-tooltip">
+                <button id="prevSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="tooltip-text">Previous Slide</span>
+            </div>
+            
+            <!-- Next slide button -->
+            <div class="footer-tooltip">
+                <button id="nextSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span class="tooltip-text">Next Slide</span>
+            </div>
+            
+            <!-- Last slide button -->
+            <div class="footer-tooltip">
+                <button id="lastSlideBtn" class="footer-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <span class="tooltip-text">Last Slide</span>
+            </div>
+            
+            <!-- Theme toggle button -->
+            <div class="footer-tooltip">
+                <button id="themeBtn" class="footer-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="tooltip-text">Toggle Theme</span>
+            </div>
+            
+            <!-- Notes button -->
+            <div class="footer-tooltip">
+                <button id="notesBtn" class="footer-button">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <span class="tooltip-text">Slide Notes</span>
+            </div>
+            
+            <!-- Fullscreen button -->
+            <div class="footer-tooltip">
+                <button id="fullscreenBtn" class="footer-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <span class="tooltip-text">Fullscreen</span>
+            </div>
+            
+            <!-- Menu dropdown -->
+            <div class="footer-dropdown">
+                <div class="footer-tooltip">
+                    <button id="menuBtn" class="footer-button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="tooltip-text">Menu</span>
+                </div>
+                <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Panel -->
+    <div id="notesPanel" class="notes-panel">
+        <div class="notes-panel-header">
+            <h3>Slide Notes</h3>
+            <button id="closeNotesBtn" class="footer-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notes-panel-content">
+            <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+        </div>
+    </div>
+
+    <!-- Initialize footer functionality -->
+    <script>
+        // Set current slide number and total
+        document.getElementById('currentSlideNum').textContent = 11;
+        document.getElementById('totalSlides').textContent = 36;
+        
+        // Update progress bar
+        document.getElementById('slideProgress').style.width = (11 / 36 * 100) + '%';
+        
+        // Close notes panel button
+        document.getElementById('closeNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesPanel').classList.remove('show');
+            document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+        });
+        
+        // Load saved notes if any
+        const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+        const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+        if (savedNotes) {
+            document.getElementById('slideNotes').value = savedNotes;
+        }
+        
+        // Save notes when changed
+        document.getElementById('slideNotes').addEventListener('input', function() {
+            localStorage.setItem('slideNotes_' + slideId, this.value);
+        });
+    </script>
+
+    <script src="js/responsive-footer-fixed.js"></script>
+    <script src="js/notes-panel-fixed.js"></script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_08_tictactoe_intro.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_10_game_state.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_10_game_state.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_08_tictactoe_intro.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources & Further Learning</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .unity-blue { color: #0078D7; }
+        .meta-purple { color: #5C2D91; }
+        
+        .part-badge {
+            background: linear-gradient(135deg, #0078D7, #5C2D91);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .resource-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-card:hover {
+            border-color: #0078D7;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .resource-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .resource-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #0078D7;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+        
+        .resource-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #0078D7;
+        }
+        
+        .resource-description {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .resource-link {
+            display: inline-flex;
+            align-items: center;
+            color: #5C2D91;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+        
+        .resource-link:hover {
+            text-decoration: underline;
+        }
+        
+        .resource-link i {
+            margin-left: 0.25rem;
+        }
+        
+        .resource-browser {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 200px;
+        }
+        
+        .resource-tabs {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 1rem;
+        }
+        
+        .resource-tab {
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-tab:hover {
+            color: #0078D7;
+        }
+        
+        .resource-tab.active {
+            color: #0078D7;
+            border-bottom-color: #0078D7;
+        }
+        
+        .resource-content {
+            display: none;
+        }
+        
+        .resource-content.active {
+            display: block;
+        }
+        
+        .resource-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-item:hover {
+            background: rgba(0, 120, 215, 0.1);
+        }
+        
+        .resource-item-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #0078D7;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+        }
+        
+        .resource-item-content {
+            flex: 1;
+        }
+        
+        .resource-item-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #0078D7;
+        }
+        
+        .resource-item-description {
+            font-size: 0.8rem;
+            color: #666;
+        }
+    
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .slide-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: url('assets/background.svg') no-repeat center center;
+            background-size: cover;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+<link rel="stylesheet" href="css/responsive-slides-fixed.css">
+<link rel="stylesheet" href="css/responsive-footer-fixed.css">
+<link rel="stylesheet" href="css/notes-panel-fixed.css">
+<link rel="stylesheet" href="css/dark-theme.css">
+<link rel="stylesheet" href="css/consistent-styles.css">
+</head>
+<body>
+    <div class="slide-container">
+<div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="part-badge">
+                <i class="fas fa-book mr-2"></i>
+                Further Learning
+            </div>
+            <h1 class="text-4xl font-bold unity-blue mb-1 text-center mx-auto">Resources & References</h1>
+            <p class="text-lg text-gray-600">Continue Your Unity VR Development Journey</p>
+        </div>
+        
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Left: Official Resources -->
+            <div>
+                <h3 class="text-lg font-semibold unity-blue mb-2 text-center mx-auto">
+                    <i class="fas fa-bookmark mr-2"></i>
+                    Official Documentation
+                </h3>
+                
+                <div class="resource-card">
+                    <div class="resource-header">
+                        <div class="resource-icon">
+                            <i class="fas fa-basketball-ball"></i>
+                        </div>
+                        <div class="resource-title">Unity Physics Documentation</div>
+                    </div>
+                    <div class="resource-description">
+                        Comprehensive documentation for Unity's physics system, including Rigidbody velocity, colliders, and triggers.
+                    </div>
+                    <a href="#" class="resource-link">
+                        View Documentation <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="resource-header">
+                        <div class="resource-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="resource-title">Unity Game State Management</div>
+                    </div>
+                    <div class="resource-description">
+                        Official guides on implementing game state systems, state machines, and array-based data structures.
+                    </div>
+                    <a href="#" class="resource-link">
+                        Visit Developer Hub <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Right: Interactive Resource Browser -->
+            <div>
+                <h3 class="text-lg font-semibold unity-blue mb-2 text-center mx-auto">
+                    <i class="fas fa-compass mr-2"></i>
+                    Resource Browser
+                </h3>
+                
+                <div class="resource-browser">
+                    <div class="resource-tabs">
+                        <div class="resource-tab active" data-tab="tutorials">Tutorials</div>
+                        <div class="resource-tab" data-tab="community">Community</div>
+                        <div class="resource-tab" data-tab="assets">Assets</div>
+                    </div>
+                    
+                    <!-- Tutorials Tab -->
+                    <div class="resource-content active" id="tutorials-content">
+                        <div class="resource-item">
+                            <div class="resource-item-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <div class="resource-item-content">
+                                <div class="resource-item-title">VR Basketball Physics Tutorial</div>
+                                <div class="resource-item-description">Step-by-step guide to implementing realistic basketball physics in VR</div>
+                            </div>
+                        </div>
+                        
+                        <div class="resource-item">
+                            <div class="resource-item-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="resource-item-content">
+                                <div class="resource-item-title">Arrays & Game State in Unity</div>
+                                <div class="resource-item-description">Comprehensive tutorial on implementing game state with arrays</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Community Tab -->
+                    <div class="resource-content" id="community-content">
+                        <div class="resource-item">
+                            <div class="resource-item-icon">
+                                <i class="fab fa-discord"></i>
+                            </div>
+                            <div class="resource-item-content">
+                                <div class="resource-item-title">Unity XR Discord</div>
+                                <div class="resource-item-description">Community Discord server for Unity XR developers</div>
+                            </div>
+                        </div>
+                        
+                        <div class="resource-item">
+                            <div class="resource-item-icon">
+                                <i class="fab fa-reddit"></i>
+                            </div>
+                            <div class="resource-item-content">
+                                <div class="resource-item-title">r/Unity3D and r/OculusQuest</div>
+                                <div class="resource-item-description">Reddit communities for Unity and Quest development</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Assets Tab -->
+                    <div class="resource-content" id="assets-content">
+                        <div class="resource-item">
+                            <div class="resource-item-icon">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <div class="resource-item-content">
+                                <div class="resource-item-title">VR Sports Game Templates</div>
+                                <div class="resource-item-description">Ready-to-use templates for VR sports games including basketball</div>
+                            </div>
+                        </div>
+                        
+                        <div class="resource-item">
+                            <div class="resource-item-icon">
+                                <i class="fas fa-table"></i>
+                            </div>
+                            <div class="resource-item-content">
+                                <div class="resource-item-title">Board Game Framework</div>
+                                <div class="resource-item-description">Framework for creating VR board games like Tic-Tac-Toe</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-2 rounded-r-lg mt-2">
+                    <p class="text-sm"><span class="font-semibold unity-blue">Pro Tip:</span> Use Unity's Physics Debugger to visualize colliders and triggers for your basketball hoop.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Interactive resource browser
+    const resourceTabs = document.querySelectorAll('.resource-tab');
+    const resourceContents = document.querySelectorAll('.resource-content');
+    
+    // Tab switching
+    resourceTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs
+            resourceTabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all content
+            resourceContents.forEach(content => content.classList.remove('active'));
+            
+            // Show content for this tab
+            const tabName = this.dataset.tab;
+            document.getElementById(`${tabName}-content`).classList.add('active');
+        });
+    });
+    
+    // Make resource items clickable
+    const resourceItems = document.querySelectorAll('.resource-item');
+    resourceItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // In a real implementation, this would open the resource URL
+            const title = this.querySelector('.resource-item-title').textContent;
+            console.log(`Opening resource: ${title}`);
+        });
+    });
+</script>
+
+<!-- Responsive Footer Template -->
+<div class="responsive-footer">
+    <!-- Left section -->
+    <div class="footer-left">
+        <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+        <div class="slide-counter">
+            <span id="currentSlideNum">23</span> / <span id="totalSlides">24</span>
+        </div>
+    </div>
+    
+    <!-- Center section -->
+    <div class="footer-center">
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="slideProgress"></div>
+        </div>
+    </div>
+    
+    <!-- Right section -->
+    <div class="footer-right">
+        <!-- First slide button -->
+        <div class="footer-tooltip">
+            <button id="firstSlideBtn" class="footer-button">
+                <i class="fas fa-step-backward"></i>
+            </button>
+            <span class="tooltip-text">First Slide</span>
+        </div>
+        
+        <!-- Previous slide button -->
+        <div class="footer-tooltip">
+            <button id="prevSlideBtn" class="footer-button">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="tooltip-text">Previous Slide</span>
+        </div>
+        
+        <!-- Next slide button -->
+        <div class="footer-tooltip">
+            <button id="nextSlideBtn" class="footer-button">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <span class="tooltip-text">Next Slide</span>
+        </div>
+        
+        <!-- Last slide button -->
+        <div class="footer-tooltip">
+            <button id="lastSlideBtn" class="footer-button">
+                <i class="fas fa-step-forward"></i>
+            </button>
+            <span class="tooltip-text">Last Slide</span>
+        </div>
+        
+        <!-- Theme toggle button -->
+        <div class="footer-tooltip">
+            <button id="themeBtn" class="footer-button">
+                <i class="fas fa-moon"></i>
+            </button>
+            <span class="tooltip-text">Toggle Theme</span>
+        </div>
+        
+        <!-- Notes button -->
+        <div class="footer-tooltip">
+            <button id="notesBtn" class="footer-button">
+                <i class="fas fa-sticky-note"></i>
+            </button>
+            <span class="tooltip-text">Slide Notes</span>
+        </div>
+        
+        <!-- Fullscreen button -->
+        <div class="footer-tooltip">
+            <button id="fullscreenBtn" class="footer-button">
+                <i class="fas fa-expand"></i>
+            </button>
+            <span class="tooltip-text">Fullscreen</span>
+        </div>
+        
+        <!-- Menu dropdown -->
+        <div class="footer-dropdown">
+            <div class="footer-tooltip">
+                <button id="menuBtn" class="footer-button">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span class="tooltip-text">Menu</span>
+            </div>
+            <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notes Panel -->
+<div id="notesPanel" class="notes-panel">
+    <div class="notes-panel-header">
+        <h3>Slide Notes</h3>
+        <button id="closeNotesBtn" class="footer-button">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="notes-panel-content">
+        <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+    </div>
+</div>
+
+<!-- Initialize footer functionality -->
+<script>
+    // Set current slide number and total
+    document.getElementById('currentSlideNum').textContent = 33;
+    document.getElementById('totalSlides').textContent = 36;
+    
+    // Update progress bar
+    document.getElementById('slideProgress').style.width = (33 / 36 * 100) + '%';
+    
+    // Close notes panel button
+    document.getElementById('closeNotesBtn').addEventListener('click', function() {
+        document.getElementById('notesPanel').classList.remove('show');
+        document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+    });
+    
+    // Load saved notes if any
+    const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+    const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+    if (savedNotes) {
+        document.getElementById('slideNotes').value = savedNotes;
+    }
+    
+    // Save notes when changed
+    document.getElementById('slideNotes').addEventListener('input', function() {
+        localStorage.setItem('slideNotes_' + slideId, this.value);
+    });
+</script>
+
+<script src="js/responsive-footer-fixed.js"></script>
+<script src="js/notes-panel-fixed.js"></script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_32_assignment.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_34_thank_you.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_32_assignment.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

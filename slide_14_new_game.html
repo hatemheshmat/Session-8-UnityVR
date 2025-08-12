@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Game Functionality</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <style>
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-theme .content-card {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0078D7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        body.dark-theme .card-title {
+            color: #3a9fff;
+        }
+        
+        .card-title i {
+            margin-right: 8px;
+        }
+        
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border-left: 4px solid #0078D7;
+            overflow-x: auto;
+        }
+        
+        body.dark-theme .code-block {
+            background-color: #2d2d2d;
+            border-left-color: #3a9fff;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        
+        .code-comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955;
+        }
+        
+        .code-keyword {
+            color: #569cd6;
+            font-weight: 600;
+        }
+        
+        .code-string {
+            color: #ce9178;
+        }
+        
+        .code-method {
+            color: #dcdcaa;
+        }
+        
+        .code-type {
+            color: #4ec9b0;
+        }
+        
+        .button-preview {
+            width: 100%;
+            height: 200px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+            margin-top: 15px;
+            perspective: 800px;
+        }
+        
+        body.dark-theme .button-preview {
+            background-color: #2d2d2d;
+        }
+        
+        .vr-button {
+            position: absolute;
+            width: 150px;
+            height: 60px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #0078D7;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.dark-theme .vr-button {
+            background-color: #3a9fff;
+        }
+        
+        .ray-pointer {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background-color: #e74c3c;
+            bottom: 20px;
+            left: 30%;
+            transform-origin: bottom;
+            transform: rotate(45deg);
+        }
+        
+        .ray-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .controller {
+            position: absolute;
+            width: 40px;
+            height: 80px;
+            background-color: #7f8c8d;
+            border-radius: 8px;
+            bottom: 20px;
+            left: 20%;
+            transform: rotate(-30deg);
+        }
+        
+        .controller-button {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: #2c3e50;
+            border-radius: 50%;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        @keyframes buttonPress {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(0.95); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .animated .vr-button {
+            animation: buttonPress 1.5s infinite;
+        }
+        
+        @keyframes rayMove {
+            0% { transform: rotate(45deg); }
+            50% { transform: rotate(35deg); }
+            100% { transform: rotate(45deg); }
+        }
+        
+        .animated .ray-pointer {
+            animation: rayMove 3s infinite;
+        }
+        
+        .step-list {
+            list-style-type: none;
+            padding-left: 0;
+            counter-reset: step-counter;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 35px;
+        }
+        
+        .step-item::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 25px;
+            height: 25px;
+            background-color: #0078D7;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        body.dark-theme .step-item::before {
+            background-color: #3a9fff;
+        }
+        
+        .step-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .feature-list {
+            margin-top: 15px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        body.dark-theme .feature-item {
+            background-color: #2d2d2d;
+        }
+        
+        .feature-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #0078D7;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        body.dark-theme .feature-icon {
+            background-color: #3a9fff;
+        }
+        
+        .feature-content {
+            flex: 1;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .feature-desc {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        body.dark-theme .feature-desc {
+            color: #aaa;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+            <h1 class="text-3xl font-bold unity-blue mb-2 text-center mx-auto">New Game Functionality</h1>
+            <p class="text-center text-gray-600 mb-4">Implementing game reset and replay features</p>
+            
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-redo"></i>
+                        New Game Button Implementation
+                    </div>
+                    
+                    <ol class="step-list">
+                        <li class="step-item">
+                            <div class="step-text">
+                                Create a Button component in the UI Canvas
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Style the button with appropriate size, color, and text
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Add XR Interactable components to make it VR-friendly
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Connect the button's onClick event to the game manager
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Implement the reset logic in the game manager
+                            </div>
+                        </li>
+                    </ol>
+                    
+                    <div class="button-preview animated">
+                        <div class="vr-button">New Game</div>
+                        <div class="ray-pointer"></div>
+                        <div class="ray-dot"></div>
+                        <div class="controller">
+                            <div class="controller-button"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-hand-pointer"></i>
+                            </div>
+                            <div class="feature-content">
+                                <div class="feature-title">VR Button Interaction</div>
+                                <div class="feature-desc">Use XR UI Input Module to handle ray-based button interactions</div>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-volume-up"></i>
+                            </div>
+                            <div class="feature-content">
+                                <div class="feature-title">Audio Feedback</div>
+                                <div class="feature-desc">Add click sounds for better user feedback when pressing buttons</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-code"></i>
+                        Reset Game Implementation
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><span class="code-keyword">public class</span> <span class="code-type">TicTacToeManager</span> : MonoBehaviour
+{
+    <span class="code-comment">// Game board (0=empty, 1=X, 2=O)</span>
+    <span class="code-keyword">private int</span>[,] board = <span class="code-keyword">new int</span>[3, 3];
+    
+    <span class="code-comment">// References to X and O objects on the board</span>
+    <span class="code-keyword">private</span> List&lt;GameObject&gt; placedPieces = <span class="code-keyword">new</span> List&lt;GameObject&gt;();
+    
+    <span class="code-comment">// References to cell objects</span>
+    <span class="code-keyword">private</span> GameObject[,] cellObjects = <span class="code-keyword">new</span> GameObject[3, 3];
+    
+    <span class="code-comment">// Prefabs for X and O</span>
+    <span class="code-keyword">public</span> GameObject xPrefab;
+    <span class="code-keyword">public</span> GameObject oPrefab;
+    
+    <span class="code-comment">// Game state</span>
+    <span class="code-keyword">private</span> GameState currentState;
+    
+    <span class="code-comment">// Stats tracking</span>
+    <span class="code-keyword">private int</span> xWins = 0;
+    <span class="code-keyword">private int</span> oWins = 0;
+    <span class="code-keyword">private int</span> draws = 0;
+    
+    <span class="code-keyword">public void</span> <span class="code-method">StartNewGame</span>()
+    {
+        <span class="code-comment">// Clear the board array</span>
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> row = 0; row < 3; row++)
+        {
+            <span class="code-keyword">for</span> (<span class="code-keyword">int</span> col = 0; col < 3; col++)
+            {
+                board[row, col] = 0;
+            }
+        }
+        
+        <span class="code-comment">// Remove all placed X and O objects</span>
+        <span class="code-keyword">foreach</span> (GameObject piece <span class="code-keyword">in</span> placedPieces)
+        {
+            Destroy(piece);
+        }
+        placedPieces.Clear();
+        
+        <span class="code-comment">// Re-enable cell interactions</span>
+        EnableBoardInteraction();
+        
+        <span class="code-comment">// Reset any visual effects</span>
+        ResetVisualEffects();
+        
+        <span class="code-comment">// Set initial game state</span>
+        SetGameState(GameState.PlayerXTurn);
+        
+        <span class="code-comment">// Play reset sound</span>
+        PlayResetSound();
+    }
+    
+    <span class="code-keyword">private void</span> <span class="code-method">EnableBoardInteraction</span>()
+    {
+        <span class="code-comment">// Enable all cell interactables</span>
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> row = 0; row < 3; row++)
+        {
+            <span class="code-keyword">for</span> (<span class="code-keyword">int</span> col = 0; col < 3; col++)
+            {
+                <span class="code-keyword">if</span> (cellObjects[row, col] != null)
+                {
+                    <span class="code-comment">// Get the interactable component</span>
+                    XRSimpleInteractable interactable = 
+                        cellObjects[row, col].GetComponent&lt;XRSimpleInteractable&gt;();
+                    
+                    <span class="code-keyword">if</span> (interactable != null)
+                    {
+                        interactable.enabled = true;
+                    }
+                }
+            }
+        }
+    }
+    
+    <span class="code-keyword">private void</span> <span class="code-method">DisableBoardInteraction</span>()
+    {
+        <span class="code-comment">// Disable all cell interactables</span>
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> row = 0; row < 3; row++)
+        {
+            <span class="code-keyword">for</span> (<span class="code-keyword">int</span> col = 0; col < 3; col++)
+            {
+                <span class="code-keyword">if</span> (cellObjects[row, col] != null)
+                {
+                    <span class="code-comment">// Get the interactable component</span>
+                    XRSimpleInteractable interactable = 
+                        cellObjects[row, col].GetComponent&lt;XRSimpleInteractable&gt;();
+                    
+                    <span class="code-keyword">if</span> (interactable != null)
+                    {
+                        interactable.enabled = false;
+                    }
+                }
+            }
+        }
+    }
+    
+    <span class="code-keyword">private void</span> <span class="code-method">ResetVisualEffects</span>()
+    {
+        <span class="code-comment">// Reset any highlighting or animations</span>
+        <span class="code-keyword">foreach</span> (GameObject cell <span class="code-keyword">in</span> cellObjects)
+        {
+            <span class="code-keyword">if</span> (cell != null)
+            {
+                <span class="code-comment">// Reset material to default</span>
+                MeshRenderer renderer = cell.GetComponent&lt;MeshRenderer&gt;();
+                <span class="code-keyword">if</span> (renderer != null && defaultMaterial != null)
+                {
+                    renderer.material = defaultMaterial;
+                }
+            }
+        }
+    }
+}</pre>
+                    </div>
+                    
+                    <div class="code-block mt-4">
+                        <pre><span class="code-comment">// In TicTacToeUI.cs</span>
+<span class="code-keyword">public void</span> <span class="code-method">UpdateStats</span>(<span class="code-keyword">int</span> xWins, <span class="code-keyword">int</span> oWins, <span class="code-keyword">int</span> draws)
+{
+    <span class="code-comment">// Update stats display</span>
+    <span class="code-keyword">if</span> (statsText != null)
+    {
+        statsText.text = <span class="code-string">$"X Wins: {xWins} | O Wins: {oWins} | Draws: {draws}"</span>;
+    }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Footer Template -->
+    <div class="responsive-footer">
+        <!-- Left section -->
+        <div class="footer-left">
+            <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+            <div class="slide-counter">
+                <span id="currentSlideNum">17</span> / <span id="totalSlides">24</span>
+            </div>
+        </div>
+        
+        <!-- Center section -->
+        <div class="footer-center">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="slideProgress"></div>
+            </div>
+        </div>
+        
+        <!-- Right section -->
+        <div class="footer-right">
+            <!-- First slide button -->
+            <div class="footer-tooltip">
+                <button id="firstSlideBtn" class="footer-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <span class="tooltip-text">First Slide</span>
+            </div>
+            
+            <!-- Previous slide button -->
+            <div class="footer-tooltip">
+                <button id="prevSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="tooltip-text">Previous Slide</span>
+            </div>
+            
+            <!-- Next slide button -->
+            <div class="footer-tooltip">
+                <button id="nextSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span class="tooltip-text">Next Slide</span>
+            </div>
+            
+            <!-- Last slide button -->
+            <div class="footer-tooltip">
+                <button id="lastSlideBtn" class="footer-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <span class="tooltip-text">Last Slide</span>
+            </div>
+            
+            <!-- Theme toggle button -->
+            <div class="footer-tooltip">
+                <button id="themeBtn" class="footer-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="tooltip-text">Toggle Theme</span>
+            </div>
+            
+            <!-- Notes button -->
+            <div class="footer-tooltip">
+                <button id="notesBtn" class="footer-button">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <span class="tooltip-text">Slide Notes</span>
+            </div>
+            
+            <!-- Fullscreen button -->
+            <div class="footer-tooltip">
+                <button id="fullscreenBtn" class="footer-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <span class="tooltip-text">Fullscreen</span>
+            </div>
+            
+            <!-- Menu dropdown -->
+            <div class="footer-dropdown">
+                <div class="footer-tooltip">
+                    <button id="menuBtn" class="footer-button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="tooltip-text">Menu</span>
+                </div>
+                <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Panel -->
+    <div id="notesPanel" class="notes-panel">
+        <div class="notes-panel-header">
+            <h3>Slide Notes</h3>
+            <button id="closeNotesBtn" class="footer-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notes-panel-content">
+            <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+        </div>
+    </div>
+
+    <!-- Initialize footer functionality -->
+    <script>
+        // Set current slide number and total
+        document.getElementById('currentSlideNum').textContent = 16;
+        document.getElementById('totalSlides').textContent = 36;
+        
+        // Update progress bar
+        document.getElementById('slideProgress').style.width = (16 / 36 * 100) + '%';
+        
+        // Close notes panel button
+        document.getElementById('closeNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesPanel').classList.remove('show');
+            document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+        });
+        
+        // Load saved notes if any
+        const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+        const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+        if (savedNotes) {
+            document.getElementById('slideNotes').value = savedNotes;
+        }
+        
+        // Save notes when changed
+        document.getElementById('slideNotes').addEventListener('input', function() {
+            localStorage.setItem('slideNotes_' + slideId, this.value);
+        });
+    </script>
+
+    <script src="js/responsive-footer-fixed.js"></script>
+    <script src="js/notes-panel-fixed.js"></script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_13_game_ui.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_15_break.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_15_break.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_13_game_ui.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Hoop Trigger</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <style>
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-theme .content-card {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0078D7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        body.dark-theme .card-title {
+            color: #3a9fff;
+        }
+        
+        .card-title i {
+            margin-right: 8px;
+        }
+        
+        .step-list {
+            list-style-type: none;
+            padding-left: 0;
+            counter-reset: step-counter;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 35px;
+        }
+        
+        .step-item::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 25px;
+            height: 25px;
+            background-color: #0078D7;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        body.dark-theme .step-item::before {
+            background-color: #3a9fff;
+        }
+        
+        .step-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border-left: 4px solid #0078D7;
+            overflow-x: auto;
+        }
+        
+        body.dark-theme .code-block {
+            background-color: #2d2d2d;
+            border-left-color: #3a9fff;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        
+        .code-comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955;
+        }
+        
+        .code-keyword {
+            color: #569cd6;
+            font-weight: 600;
+        }
+        
+        .code-string {
+            color: #ce9178;
+        }
+        
+        .code-method {
+            color: #dcdcaa;
+        }
+        
+        .code-type {
+            color: #4ec9b0;
+        }
+        
+        .hoop-diagram {
+            width: 100%;
+            height: 250px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        body.dark-theme .hoop-diagram {
+            background-color: #2d2d2d;
+        }
+        
+        .hoop-backboard {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            width: 120px;
+            height: 80px;
+            background-color: #ecf0f1;
+            border: 2px solid #7f8c8d;
+        }
+        
+        body.dark-theme .hoop-backboard {
+            background-color: #4a4a4a;
+            border-color: #7f8c8d;
+        }
+        
+        .hoop-rim {
+            position: absolute;
+            top: 110px;
+            right: 80px;
+            width: 40px;
+            height: 5px;
+            background-color: #e74c3c;
+        }
+        
+        .hoop-net {
+            position: absolute;
+            top: 115px;
+            right: 80px;
+            width: 40px;
+            height: 30px;
+            border-left: 2px dotted #bdc3c7;
+            border-right: 2px dotted #bdc3c7;
+            border-bottom: 2px dotted #bdc3c7;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .trigger-zone {
+            position: absolute;
+            top: 115px;
+            right: 80px;
+            width: 40px;
+            height: 10px;
+            background-color: rgba(46, 204, 113, 0.3);
+            border: 2px dashed #2ecc71;
+            border-radius: 5px;
+        }
+        
+        .basketball {
+            width: 30px;
+            height: 30px;
+            background: #e67e22;
+            border-radius: 50%;
+            position: absolute;
+            top: 150px;
+            right: 85px;
+        }
+        
+        @keyframes ballDrop {
+            0% { top: 150px; }
+            50% { top: 120px; }
+            100% { top: 180px; }
+        }
+        
+        @keyframes triggerFlash {
+            0% { background-color: rgba(46, 204, 113, 0.3); }
+            50% { background-color: rgba(46, 204, 113, 0.7); }
+            100% { background-color: rgba(46, 204, 113, 0.3); }
+        }
+        
+        .animated .basketball {
+            animation: ballDrop 2s infinite;
+        }
+        
+        .animated .trigger-zone {
+            animation: triggerFlash 2s infinite;
+        }
+        
+        .collider-types {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .collider-type {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            width: 45%;
+        }
+        
+        body.dark-theme .collider-type {
+            background-color: #2d2d2d;
+        }
+        
+        .collider-title {
+            font-weight: 600;
+            color: #0078D7;
+            margin-bottom: 5px;
+        }
+        
+        body.dark-theme .collider-title {
+            color: #3a9fff;
+        }
+        
+        .collider-desc {
+            font-size: 0.85rem;
+        }
+        
+        .collider-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .solid-icon {
+            color: #e74c3c;
+        }
+        
+        .trigger-icon {
+            color: #2ecc71;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+            <h1 class="text-3xl font-bold unity-blue mb-2 text-center mx-auto">Basketball Hoop Trigger</h1>
+            <p class="text-center text-gray-600 mb-4">Creating a trigger collider to detect successful shots</p>
+            
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-bullseye"></i>
+                        Setting Up the Hoop
+                    </div>
+                    
+                    <ol class="step-list">
+                        <li class="step-item">
+                            <div class="step-text">
+                                Create a basketball hoop with backboard, rim, and net using primitive objects or imported models
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Add a Box Collider to the backboard and rim with <strong>Is Trigger = false</strong> (solid objects)
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Create an empty GameObject as a child of the rim and position it below the rim
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Add a Box Collider to this GameObject and set <strong>Is Trigger = true</strong>
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-text">
+                                Size the trigger collider to detect when the ball passes through the hoop
+                            </div>
+                        </li>
+                    </ol>
+                    
+                    <div class="collider-types">
+                        <div class="collider-type">
+                            <div class="collider-icon solid-icon">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <div class="collider-title">Solid Collider</div>
+                            <div class="collider-desc">For backboard and rim</div>
+                        </div>
+                        
+                        <div class="collider-type">
+                            <div class="collider-icon trigger-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div class="collider-title">Trigger Collider</div>
+                            <div class="collider-desc">For score detection</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-code"></i>
+                        Implementing Score Detection
+                    </div>
+                    
+                    <div class="code-block">
+                        <pre><span class="code-keyword">using</span> UnityEngine;
+
+<span class="code-keyword">public class</span> <span class="code-type">HoopTrigger</span> : MonoBehaviour
+{
+    <span class="code-comment">// Reference to the score manager</span>
+    <span class="code-keyword">public</span> ScoreManager scoreManager;
+    
+    <span class="code-comment">// Flag to prevent multiple triggers from one shot</span>
+    <span class="code-keyword">private bool</span> canScore = true;
+    
+    <span class="code-comment">// Audio for successful shot</span>
+    <span class="code-keyword">public</span> AudioSource scoreSound;
+    
+    <span class="code-keyword">private void</span> <span class="code-method">OnTriggerEnter</span>(Collider other)
+    {
+        <span class="code-comment">// Check if the basketball entered the trigger</span>
+        <span class="code-keyword">if</span> (other.CompareTag("Basketball") && canScore)
+        {
+            <span class="code-comment">// Increment score</span>
+            scoreManager.AddPoints(2);
+            
+            <span class="code-comment">// Play sound effect</span>
+            <span class="code-keyword">if</span> (scoreSound != null)
+            {
+                scoreSound.Play();
+            }
+            
+            <span class="code-comment">// Prevent multiple triggers</span>
+            canScore = false;
+            Invoke("ResetScoring", 1.0f);
+        }
+    }
+    
+    <span class="code-keyword">private void</span> <span class="code-method">ResetScoring</span>()
+    {
+        canScore = true;
+    }
+}</pre>
+                    </div>
+                    
+                    <div class="hoop-diagram animated">
+                        <div class="hoop-backboard"></div>
+                        <div class="hoop-rim"></div>
+                        <div class="hoop-net"></div>
+                        <div class="trigger-zone"></div>
+                        <div class="basketball"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Footer Template -->
+    <div class="responsive-footer">
+        <!-- Left section -->
+        <div class="footer-left">
+            <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+            <div class="slide-counter">
+                <span id="currentSlideNum">6</span> / <span id="totalSlides">24</span>
+            </div>
+        </div>
+        
+        <!-- Center section -->
+        <div class="footer-center">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="slideProgress"></div>
+            </div>
+        </div>
+        
+        <!-- Right section -->
+        <div class="footer-right">
+            <!-- First slide button -->
+            <div class="footer-tooltip">
+                <button id="firstSlideBtn" class="footer-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <span class="tooltip-text">First Slide</span>
+            </div>
+            
+            <!-- Previous slide button -->
+            <div class="footer-tooltip">
+                <button id="prevSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="tooltip-text">Previous Slide</span>
+            </div>
+            
+            <!-- Next slide button -->
+            <div class="footer-tooltip">
+                <button id="nextSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span class="tooltip-text">Next Slide</span>
+            </div>
+            
+            <!-- Last slide button -->
+            <div class="footer-tooltip">
+                <button id="lastSlideBtn" class="footer-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <span class="tooltip-text">Last Slide</span>
+            </div>
+            
+            <!-- Theme toggle button -->
+            <div class="footer-tooltip">
+                <button id="themeBtn" class="footer-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="tooltip-text">Toggle Theme</span>
+            </div>
+            
+            <!-- Notes button -->
+            <div class="footer-tooltip">
+                <button id="notesBtn" class="footer-button">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <span class="tooltip-text">Slide Notes</span>
+            </div>
+            
+            <!-- Fullscreen button -->
+            <div class="footer-tooltip">
+                <button id="fullscreenBtn" class="footer-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <span class="tooltip-text">Fullscreen</span>
+            </div>
+            
+            <!-- Menu dropdown -->
+            <div class="footer-dropdown">
+                <div class="footer-tooltip">
+                    <button id="menuBtn" class="footer-button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="tooltip-text">Menu</span>
+                </div>
+                <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Panel -->
+    <div id="notesPanel" class="notes-panel">
+        <div class="notes-panel-header">
+            <h3>Slide Notes</h3>
+            <button id="closeNotesBtn" class="footer-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notes-panel-content">
+            <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+        </div>
+    </div>
+
+    <!-- Initialize footer functionality -->
+    <script>
+        // Set current slide number and total
+        document.getElementById('currentSlideNum').textContent = 5;
+        document.getElementById('totalSlides').textContent = 36;
+        
+        // Update progress bar
+        document.getElementById('slideProgress').style.width = (5 / 36 * 100) + '%';
+        
+        // Close notes panel button
+        document.getElementById('closeNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesPanel').classList.remove('show');
+            document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+        });
+        
+        // Load saved notes if any
+        const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+        const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+        if (savedNotes) {
+            document.getElementById('slideNotes').value = savedNotes;
+        }
+        
+        // Save notes when changed
+        document.getElementById('slideNotes').addEventListener('input', function() {
+            localStorage.setItem('slideNotes_' + slideId, this.value);
+        });
+    </script>
+
+    <script src="js/responsive-footer-fixed.js"></script>
+    <script src="js/notes-panel-fixed.js"></script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_02_throw_velocity.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_04_score_manager.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_04_score_manager.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_02_throw_velocity.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

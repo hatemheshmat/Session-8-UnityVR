@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game State Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <style>
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-theme .content-card {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0078D7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        body.dark-theme .card-title {
+            color: #3a9fff;
+        }
+        
+        .card-title i {
+            margin-right: 8px;
+        }
+        
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border-left: 4px solid #0078D7;
+            overflow-x: auto;
+        }
+        
+        body.dark-theme .code-block {
+            background-color: #2d2d2d;
+            border-left-color: #3a9fff;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        
+        .code-comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955;
+        }
+        
+        .code-keyword {
+            color: #569cd6;
+            font-weight: 600;
+        }
+        
+        .code-string {
+            color: #ce9178;
+        }
+        
+        .code-method {
+            color: #dcdcaa;
+        }
+        
+        .code-type {
+            color: #4ec9b0;
+        }
+        
+        .state-diagram {
+            width: 100%;
+            height: 300px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+            margin-top: 15px;
+            padding: 10px;
+        }
+        
+        body.dark-theme .state-diagram {
+            background-color: #2d2d2d;
+        }
+        
+        .state-node {
+            position: absolute;
+            width: 120px;
+            height: 50px;
+            background-color: #0078D7;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        body.dark-theme .state-node {
+            background-color: #3a9fff;
+        }
+        
+        .state-node.active {
+            background-color: #5C2D91;
+            box-shadow: 0 0 10px rgba(92, 45, 145, 0.5);
+        }
+        
+        body.dark-theme .state-node.active {
+            background-color: #9b6ad9;
+            box-shadow: 0 0 10px rgba(155, 106, 217, 0.5);
+        }
+        
+        .state-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid #666;
+        }
+        
+        body.dark-theme .state-arrow {
+            border-left-color: #aaa;
+        }
+        
+        .state-line {
+            position: absolute;
+            background-color: #666;
+            height: 2px;
+        }
+        
+        body.dark-theme .state-line {
+            background-color: #aaa;
+        }
+        
+        .state-label {
+            position: absolute;
+            font-size: 0.8rem;
+            color: #666;
+            background-color: #f8f9fa;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        
+        body.dark-theme .state-label {
+            color: #aaa;
+            background-color: #2d2d2d;
+        }
+        
+        /* State positions */
+        .state-init {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .state-player1 {
+            top: 120px;
+            left: 20%;
+        }
+        
+        .state-player2 {
+            top: 120px;
+            right: 20%;
+        }
+        
+        .state-win {
+            bottom: 20px;
+            left: 20%;
+        }
+        
+        .state-draw {
+            bottom: 20px;
+            right: 20%;
+        }
+        
+        /* Lines */
+        .line-init-p1 {
+            top: 70px;
+            left: 50%;
+            width: 30%;
+            transform: translateX(-100%);
+            transform-origin: right;
+            transform: translateX(-100%) rotate(45deg);
+        }
+        
+        .line-init-p2 {
+            top: 70px;
+            right: 50%;
+            width: 30%;
+            transform-origin: left;
+            transform: translateX(100%) rotate(-45deg);
+        }
+        
+        .line-p1-p2 {
+            top: 120px;
+            left: 20%;
+            width: 60%;
+        }
+        
+        .line-p2-p1 {
+            top: 145px;
+            right: 20%;
+            width: 60%;
+        }
+        
+        .line-p1-win {
+            top: 170px;
+            left: 20%;
+            height: 80px;
+            width: 2px;
+        }
+        
+        .line-p2-win {
+            top: 170px;
+            right: 20%;
+            height: 40px;
+            width: 2px;
+            transform: translateX(-60px);
+        }
+        
+        .line-p1-draw {
+            top: 170px;
+            left: 20%;
+            height: 40px;
+            width: 2px;
+            transform: translateX(60px);
+        }
+        
+        .line-p2-draw {
+            top: 170px;
+            right: 20%;
+            height: 80px;
+            width: 2px;
+        }
+        
+        /* Arrows */
+        .arrow-init-p1 {
+            top: 60px;
+            left: 35%;
+            transform: rotate(45deg);
+        }
+        
+        .arrow-init-p2 {
+            top: 60px;
+            right: 35%;
+            transform: rotate(-45deg);
+        }
+        
+        .arrow-p1-p2 {
+            top: 120px;
+            left: 75%;
+        }
+        
+        .arrow-p2-p1 {
+            top: 145px;
+            left: 25%;
+            transform: rotate(180deg);
+        }
+        
+        .arrow-p1-win {
+            bottom: 70px;
+            left: 20%;
+            transform: rotate(90deg);
+        }
+        
+        .arrow-p2-win {
+            bottom: 110px;
+            left: 35%;
+            transform: rotate(135deg);
+        }
+        
+        .arrow-p1-draw {
+            bottom: 110px;
+            right: 35%;
+            transform: rotate(225deg);
+        }
+        
+        .arrow-p2-draw {
+            bottom: 70px;
+            right: 20%;
+            transform: rotate(90deg);
+        }
+        
+        /* Labels */
+        .label-init-p1 {
+            top: 50px;
+            left: 35%;
+        }
+        
+        .label-init-p2 {
+            top: 50px;
+            right: 35%;
+        }
+        
+        .label-p1-p2 {
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .label-p2-p1 {
+            top: 145px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .label-p1-win {
+            top: 180px;
+            left: 10%;
+        }
+        
+        .label-p2-win {
+            top: 180px;
+            left: 35%;
+        }
+        
+        .label-p1-draw {
+            top: 180px;
+            right: 35%;
+        }
+        
+        .label-p2-draw {
+            top: 180px;
+            right: 10%;
+        }
+        
+        @keyframes stateHighlight {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .animated .state-node.active {
+            animation: stateHighlight 2s infinite;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+            <h1 class="text-3xl font-bold unity-blue mb-2 text-center mx-auto">Game State Management</h1>
+            <p class="text-center text-gray-600 mb-4">Implementing a state machine for Tic-Tac-Toe</p>
+            
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-code-branch"></i>
+                        Game State Implementation
+                    </div>
+                    
+                    <p class="mb-3">Using an enum to define possible game states makes our code more readable and maintainable.</p>
+                    
+                    <div class="code-block">
+                        <pre><span class="code-keyword">using</span> UnityEngine;
+<span class="code-keyword">using</span> TMPro;
+
+<span class="code-keyword">public class</span> <span class="code-type">TicTacToeManager</span> : MonoBehaviour
+{
+    <span class="code-comment">// Game state enum</span>
+    <span class="code-keyword">public enum</span> GameState
+    {
+        Initialize,
+        PlayerXTurn,
+        PlayerOTurn,
+        PlayerXWin,
+        PlayerOWin,
+        Draw
+    }
+    
+    <span class="code-comment">// Current game state</span>
+    <span class="code-keyword">private</span> GameState currentState;
+    
+    <span class="code-comment">// Game board (0=empty, 1=X, 2=O)</span>
+    <span class="code-keyword">private int</span>[,] board = <span class="code-keyword">new int</span>[3, 3];
+    
+    <span class="code-comment">// UI references</span>
+    <span class="code-keyword">public</span> TextMeshProUGUI statusText;
+    
+    <span class="code-keyword">void</span> <span class="code-method">Start</span>()
+    {
+        <span class="code-comment">// Initialize the game</span>
+        InitializeGame();
+    }
+    
+    <span class="code-keyword">void</span> <span class="code-method">InitializeGame</span>()
+    {
+        <span class="code-comment">// Clear the board</span>
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = 0; i < 3; i++)
+        {
+            <span class="code-keyword">for</span> (<span class="code-keyword">int</span> j = 0; j < 3; j++)
+            {
+                board[i, j] = 0;
+            }
+        }
+        
+        <span class="code-comment">// Set initial state</span>
+        SetGameState(GameState.PlayerXTurn);
+    }
+    
+    <span class="code-keyword">void</span> <span class="code-method">SetGameState</span>(GameState newState)
+    {
+        currentState = newState;
+        
+        <span class="code-comment">// Update UI based on state</span>
+        <span class="code-keyword">switch</span> (currentState)
+        {
+            <span class="code-keyword">case</span> GameState.PlayerXTurn:
+                statusText.text = "Player X's Turn";
+                <span class="code-keyword">break</span>;
+            <span class="code-keyword">case</span> GameState.PlayerOTurn:
+                statusText.text = "Player O's Turn";
+                <span class="code-keyword">break</span>;
+            <span class="code-keyword">case</span> GameState.PlayerXWin:
+                statusText.text = "Player X Wins!";
+                <span class="code-keyword">break</span>;
+            <span class="code-keyword">case</span> GameState.PlayerOWin:
+                statusText.text = "Player O Wins!";
+                <span class="code-keyword">break</span>;
+            <span class="code-keyword">case</span> GameState.Draw:
+                statusText.text = "Game Draw!";
+                <span class="code-keyword">break</span>;
+        }
+    }
+}</pre>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-sitemap"></i>
+                        State Machine Diagram
+                    </div>
+                    
+                    <div class="state-diagram animated">
+                        <div class="state-node state-init">Initialize</div>
+                        <div class="state-node state-player1 active">Player X Turn</div>
+                        <div class="state-node state-player2">Player O Turn</div>
+                        <div class="state-node state-win">Win</div>
+                        <div class="state-node state-draw">Draw</div>
+                        
+                        <!-- Lines -->
+                        <div class="state-line line-init-p1"></div>
+                        <div class="state-line line-init-p2"></div>
+                        <div class="state-line line-p1-p2"></div>
+                        <div class="state-line line-p2-p1"></div>
+                        <div class="state-line line-p1-win"></div>
+                        <div class="state-line line-p2-win"></div>
+                        <div class="state-line line-p1-draw"></div>
+                        <div class="state-line line-p2-draw"></div>
+                        
+                        <!-- Arrows -->
+                        <div class="state-arrow arrow-init-p1"></div>
+                        <div class="state-arrow arrow-init-p2"></div>
+                        <div class="state-arrow arrow-p1-p2"></div>
+                        <div class="state-arrow arrow-p2-p1"></div>
+                        <div class="state-arrow arrow-p1-win"></div>
+                        <div class="state-arrow arrow-p2-win"></div>
+                        <div class="state-arrow arrow-p1-draw"></div>
+                        <div class="state-arrow arrow-p2-draw"></div>
+                        
+                        <!-- Labels -->
+                        <div class="state-label label-init-p1">Start</div>
+                        <div class="state-label label-init-p2">Start</div>
+                        <div class="state-label label-p1-p2">Place X</div>
+                        <div class="state-label label-p2-p1">Place O</div>
+                        <div class="state-label label-p1-win">X wins</div>
+                        <div class="state-label label-p2-win">O wins</div>
+                        <div class="state-label label-p1-draw">Board full</div>
+                        <div class="state-label label-p2-draw">Board full</div>
+                    </div>
+                    
+                    <div class="code-block mt-4">
+                        <pre><span class="code-keyword">public void</span> <span class="code-method">MakeMove</span>(<span class="code-keyword">int</span> row, <span class="code-keyword">int</span> col)
+{
+    <span class="code-comment">// Check if the cell is empty and it's a valid turn</span>
+    <span class="code-keyword">if</span> (board[row, col] == 0 && 
+        (currentState == GameState.PlayerXTurn || 
+         currentState == GameState.PlayerOTurn))
+    {
+        <span class="code-comment">// Place X or O based on current turn</span>
+        <span class="code-keyword">if</span> (currentState == GameState.PlayerXTurn)
+        {
+            board[row, col] = 1; <span class="code-comment">// X = 1</span>
+            
+            <span class="code-comment">// Check for win or draw</span>
+            <span class="code-keyword">if</span> (CheckWin(1))
+            {
+                SetGameState(GameState.PlayerXWin);
+            }
+            <span class="code-keyword">else if</span> (IsBoardFull())
+            {
+                SetGameState(GameState.Draw);
+            }
+            <span class="code-keyword">else</span>
+            {
+                <span class="code-comment">// Switch to next player</span>
+                SetGameState(GameState.PlayerOTurn);
+            }
+        }
+        <span class="code-keyword">else</span> <span class="code-comment">// PlayerOTurn</span>
+        {
+            board[row, col] = 2; <span class="code-comment">// O = 2</span>
+            
+            <span class="code-comment">// Check for win or draw</span>
+            <span class="code-keyword">if</span> (CheckWin(2))
+            {
+                SetGameState(GameState.PlayerOWin);
+            }
+            <span class="code-keyword">else if</span> (IsBoardFull())
+            {
+                SetGameState(GameState.Draw);
+            }
+            <span class="code-keyword">else</span>
+            {
+                <span class="code-comment">// Switch to next player</span>
+                SetGameState(GameState.PlayerXTurn);
+            }
+        }
+        
+        <span class="code-comment">// Update visual representation</span>
+        UpdateBoardVisuals(row, col);
+    }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Footer Template -->
+    <div class="responsive-footer">
+        <!-- Left section -->
+        <div class="footer-left">
+            <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+            <div class="slide-counter">
+                <span id="currentSlideNum">13</span> / <span id="totalSlides">24</span>
+            </div>
+        </div>
+        
+        <!-- Center section -->
+        <div class="footer-center">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="slideProgress"></div>
+            </div>
+        </div>
+        
+        <!-- Right section -->
+        <div class="footer-right">
+            <!-- First slide button -->
+            <div class="footer-tooltip">
+                <button id="firstSlideBtn" class="footer-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <span class="tooltip-text">First Slide</span>
+            </div>
+            
+            <!-- Previous slide button -->
+            <div class="footer-tooltip">
+                <button id="prevSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="tooltip-text">Previous Slide</span>
+            </div>
+            
+            <!-- Next slide button -->
+            <div class="footer-tooltip">
+                <button id="nextSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span class="tooltip-text">Next Slide</span>
+            </div>
+            
+            <!-- Last slide button -->
+            <div class="footer-tooltip">
+                <button id="lastSlideBtn" class="footer-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <span class="tooltip-text">Last Slide</span>
+            </div>
+            
+            <!-- Theme toggle button -->
+            <div class="footer-tooltip">
+                <button id="themeBtn" class="footer-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="tooltip-text">Toggle Theme</span>
+            </div>
+            
+            <!-- Notes button -->
+            <div class="footer-tooltip">
+                <button id="notesBtn" class="footer-button">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <span class="tooltip-text">Slide Notes</span>
+            </div>
+            
+            <!-- Fullscreen button -->
+            <div class="footer-tooltip">
+                <button id="fullscreenBtn" class="footer-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <span class="tooltip-text">Fullscreen</span>
+            </div>
+            
+            <!-- Menu dropdown -->
+            <div class="footer-dropdown">
+                <div class="footer-tooltip">
+                    <button id="menuBtn" class="footer-button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="tooltip-text">Menu</span>
+                </div>
+                <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Panel -->
+    <div id="notesPanel" class="notes-panel">
+        <div class="notes-panel-header">
+            <h3>Slide Notes</h3>
+            <button id="closeNotesBtn" class="footer-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notes-panel-content">
+            <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+        </div>
+    </div>
+
+    <!-- Initialize footer functionality -->
+    <script>
+        // Set current slide number and total
+        document.getElementById('currentSlideNum').textContent = 12;
+        document.getElementById('totalSlides').textContent = 36;
+        
+        // Update progress bar
+        document.getElementById('slideProgress').style.width = (12 / 36 * 100) + '%';
+        
+        // Close notes panel button
+        document.getElementById('closeNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesPanel').classList.remove('show');
+            document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+        });
+        
+        // Load saved notes if any
+        const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+        const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+        if (savedNotes) {
+            document.getElementById('slideNotes').value = savedNotes;
+        }
+        
+        // Save notes when changed
+        document.getElementById('slideNotes').addEventListener('input', function() {
+            localStorage.setItem('slideNotes_' + slideId, this.value);
+        });
+    </script>
+
+    <script src="js/responsive-footer-fixed.js"></script>
+    <script src="js/notes-panel-fixed.js"></script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_09_arrays_csharp.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_11_game_board.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_11_game_board.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_09_arrays_csharp.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+

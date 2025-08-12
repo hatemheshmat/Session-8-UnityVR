@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Win Detection Algorithm</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/responsive-slides-fixed.css">
+    <link rel="stylesheet" href="css/responsive-footer-fixed.css">
+    <link rel="stylesheet" href="css/notes-panel-fixed.css">
+    <link rel="stylesheet" href="css/dark-theme.css">
+    <link rel="stylesheet" href="css/consistent-styles.css">
+    <style>
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-theme .content-card {
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0078D7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        body.dark-theme .card-title {
+            color: #3a9fff;
+        }
+        
+        .card-title i {
+            margin-right: 8px;
+        }
+        
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border-left: 4px solid #0078D7;
+            overflow-x: auto;
+        }
+        
+        body.dark-theme .code-block {
+            background-color: #2d2d2d;
+            border-left-color: #3a9fff;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        
+        .code-comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955;
+        }
+        
+        .code-keyword {
+            color: #569cd6;
+            font-weight: 600;
+        }
+        
+        .code-string {
+            color: #ce9178;
+        }
+        
+        .code-method {
+            color: #dcdcaa;
+        }
+        
+        .code-type {
+            color: #4ec9b0;
+        }
+        
+        .win-patterns {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .win-pattern {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .pattern-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #0078D7;
+        }
+        
+        body.dark-theme .pattern-title {
+            color: #3a9fff;
+        }
+        
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 20px);
+            grid-template-rows: repeat(3, 20px);
+            gap: 2px;
+        }
+        
+        .pattern-cell {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+        }
+        
+        body.dark-theme .pattern-cell {
+            background-color: #2d2d2d;
+            border-color: #444;
+        }
+        
+        .pattern-cell.highlight {
+            background-color: #e74c3c;
+        }
+        
+        body.dark-theme .pattern-cell.highlight {
+            background-color: #c0392b;
+        }
+        
+        .win-animation {
+            width: 100%;
+            height: 200px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+            margin-top: 15px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        body.dark-theme .win-animation {
+            background-color: #2d2d2d;
+        }
+        
+        .win-board {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 5px;
+        }
+        
+        .win-cell {
+            background-color: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        body.dark-theme .win-cell {
+            background-color: #3d3d3d;
+        }
+        
+        .win-x {
+            color: #e74c3c;
+        }
+        
+        .win-o {
+            color: #3498db;
+        }
+        
+        .win-empty {
+            color: transparent;
+        }
+        
+        .win-line {
+            position: absolute;
+            background-color: #2ecc71;
+            height: 10px;
+            width: 0;
+            border-radius: 5px;
+            z-index: 10;
+            transform-origin: left;
+        }
+        
+        body.dark-theme .win-line {
+            background-color: #27ae60;
+        }
+        
+        @keyframes drawLine {
+            0% { width: 0; }
+            100% { width: 190px; }
+        }
+        
+        .animated .win-line {
+            animation: drawLine 2s forwards;
+        }
+        
+        @keyframes cellPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .animated .win-cell.win-highlight {
+            animation: cellPulse 1s infinite;
+        }
+        
+        .algorithm-steps {
+            margin-top: 15px;
+        }
+        
+        .algorithm-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        body.dark-theme .algorithm-step {
+            background-color: #2d2d2d;
+        }
+        
+        .step-number {
+            width: 25px;
+            height: 25px;
+            background-color: #0078D7;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        body.dark-theme .step-number {
+            background-color: #3a9fff;
+        }
+        
+        .step-content {
+            font-size: 0.95rem;
+        }
+    
+        .code-comment {
+            color: #6a9955 !important;
+            font-style: italic;
+        }
+        
+        body.dark-theme .code-comment {
+            color: #6a9955 !important;
+        }
+        
+        .code-keyword {
+            color: #569cd6 !important;
+            font-weight: 600;
+        }
+        
+        body.dark-theme .code-keyword {
+            color: #569cd6 !important;
+        }
+        
+        .code-string {
+            color: #ce9178 !important;
+        }
+        
+        body.dark-theme .code-string {
+            color: #ce9178 !important;
+        }
+        
+        .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        body.dark-theme .code-method {
+            color: #dcdcaa !important;
+        }
+        
+        .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        body.dark-theme .code-type {
+            color: #4ec9b0 !important;
+        }
+        
+        .code-block {
+            color: #333 !important;
+        }
+        
+        body.dark-theme .code-block {
+            color: #d4d4d4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-content-wrapper" style="padding-bottom: 80px !important;">
+            <h1 class="text-3xl font-bold unity-blue mb-2 text-center mx-auto">Win Detection Algorithm</h1>
+            <p class="text-center text-gray-600 mb-4">Implementing logic to check for win conditions</p>
+            
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-trophy"></i>
+                        Win Patterns
+                    </div>
+                    
+                    <p class="mb-3">In Tic-Tac-Toe, there are 8 possible winning patterns: 3 rows, 3 columns, and 2 diagonals.</p>
+                    
+                    <div class="win-patterns">
+                        <div class="win-pattern">
+                            <div class="pattern-title">Row 1</div>
+                            <div class="pattern-grid">
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="win-pattern">
+                            <div class="pattern-title">Row 2</div>
+                            <div class="pattern-grid">
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="win-pattern">
+                            <div class="pattern-title">Row 3</div>
+                            <div class="pattern-grid">
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell highlight"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="win-pattern">
+                            <div class="pattern-title">Col 1</div>
+                            <div class="pattern-grid">
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="win-pattern">
+                            <div class="pattern-title">Col 2</div>
+                            <div class="pattern-grid">
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="win-pattern">
+                            <div class="pattern-title">Col 3</div>
+                            <div class="pattern-grid">
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="win-pattern">
+                            <div class="pattern-title">Diag 1</div>
+                            <div class="pattern-grid">
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="win-pattern">
+                            <div class="pattern-title">Diag 2</div>
+                            <div class="pattern-grid">
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell highlight"></div>
+                                <div class="pattern-cell"></div>
+                                <div class="pattern-cell"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="win-animation animated">
+                        <div class="win-board">
+                            <div class="win-cell win-x win-highlight">X</div>
+                            <div class="win-cell win-empty"></div>
+                            <div class="win-cell win-o">O</div>
+                            <div class="win-cell win-empty"></div>
+                            <div class="win-cell win-x win-highlight">X</div>
+                            <div class="win-cell win-o">O</div>
+                            <div class="win-cell win-empty"></div>
+                            <div class="win-cell win-empty"></div>
+                            <div class="win-cell win-x win-highlight">X</div>
+                        </div>
+                        <div class="win-line" style="top: 125px; left: 40px; transform: rotate(45deg);"></div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-title">
+                        <i class="fas fa-code"></i>
+                        Win Detection Implementation
+                    </div>
+                    
+                    <div class="algorithm-steps">
+                        <div class="algorithm-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                Check all rows for three matching symbols
+                            </div>
+                        </div>
+                        <div class="algorithm-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                Check all columns for three matching symbols
+                            </div>
+                        </div>
+                        <div class="algorithm-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                Check both diagonals for three matching symbols
+                            </div>
+                        </div>
+                        <div class="algorithm-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                If no win is found, check if the board is full (draw)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="code-block mt-4">
+                        <pre><span class="code-keyword">public bool</span> <span class="code-method">CheckWin</span>(<span class="code-keyword">int</span> player)
+{
+    <span class="code-comment">// Check rows</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> row = 0; row < 3; row++)
+    {
+        <span class="code-keyword">if</span> (board[row, 0] == player && 
+            board[row, 1] == player && 
+            board[row, 2] == player)
+        {
+            <span class="code-comment">// Highlight winning cells</span>
+            HighlightWinningCells(row, 0, row, 1, row, 2);
+            <span class="code-keyword">return true</span>;
+        }
+    }
+    
+    <span class="code-comment">// Check columns</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> col = 0; col < 3; col++)
+    {
+        <span class="code-keyword">if</span> (board[0, col] == player && 
+            board[1, col] == player && 
+            board[2, col] == player)
+        {
+            <span class="code-comment">// Highlight winning cells</span>
+            HighlightWinningCells(0, col, 1, col, 2, col);
+            <span class="code-keyword">return true</span>;
+        }
+    }
+    
+    <span class="code-comment">// Check diagonal (top-left to bottom-right)</span>
+    <span class="code-keyword">if</span> (board[0, 0] == player && 
+        board[1, 1] == player && 
+        board[2, 2] == player)
+    {
+        <span class="code-comment">// Highlight winning cells</span>
+        HighlightWinningCells(0, 0, 1, 1, 2, 2);
+        <span class="code-keyword">return true</span>;
+    }
+    
+    <span class="code-comment">// Check diagonal (top-right to bottom-left)</span>
+    <span class="code-keyword">if</span> (board[0, 2] == player && 
+        board[1, 1] == player && 
+        board[2, 0] == player)
+    {
+        <span class="code-comment">// Highlight winning cells</span>
+        HighlightWinningCells(0, 2, 1, 1, 2, 0);
+        <span class="code-keyword">return true</span>;
+    }
+    
+    <span class="code-keyword">return false</span>;
+}
+
+<span class="code-keyword">public bool</span> <span class="code-method">IsBoardFull</span>()
+{
+    <span class="code-comment">// Check if all cells are filled</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> row = 0; row < 3; row++)
+    {
+        <span class="code-keyword">for</span> (<span class="code-keyword">int</span> col = 0; col < 3; col++)
+        {
+            <span class="code-keyword">if</span> (board[row, col] == 0) <span class="code-comment">// Empty cell</span>
+            {
+                <span class="code-keyword">return false</span>;
+            }
+        }
+    }
+    <span class="code-keyword">return true</span>;
+}
+
+<span class="code-keyword">private void</span> <span class="code-method">HighlightWinningCells</span>(<span class="code-keyword">int</span> r1, <span class="code-keyword">int</span> c1, <span class="code-keyword">int</span> r2, <span class="code-keyword">int</span> c2, <span class="code-keyword">int</span> r3, <span class="code-keyword">int</span> c3)
+{
+    <span class="code-comment">// Get cell GameObjects from the grid</span>
+    GameObject cell1 = cellObjects[r1, c1];
+    GameObject cell2 = cellObjects[r2, c2];
+    GameObject cell3 = cellObjects[r3, c3];
+    
+    <span class="code-comment">// Apply winning effect (e.g., change material)</span>
+    ApplyWinningEffect(cell1);
+    ApplyWinningEffect(cell2);
+    ApplyWinningEffect(cell3);
+    
+    <span class="code-comment">// Draw a line through winning cells</span>
+    DrawWinLine(cell1.transform.position, cell3.transform.position);
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Footer Template -->
+    <div class="responsive-footer">
+        <!-- Left section -->
+        <div class="footer-left">
+            <img src="assets/unity-logo.png" alt="Unity Logo" class="footer-logo">
+            <div class="slide-counter">
+                <span id="currentSlideNum">15</span> / <span id="totalSlides">24</span>
+            </div>
+        </div>
+        
+        <!-- Center section -->
+        <div class="footer-center">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="slideProgress"></div>
+            </div>
+        </div>
+        
+        <!-- Right section -->
+        <div class="footer-right">
+            <!-- First slide button -->
+            <div class="footer-tooltip">
+                <button id="firstSlideBtn" class="footer-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <span class="tooltip-text">First Slide</span>
+            </div>
+            
+            <!-- Previous slide button -->
+            <div class="footer-tooltip">
+                <button id="prevSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="tooltip-text">Previous Slide</span>
+            </div>
+            
+            <!-- Next slide button -->
+            <div class="footer-tooltip">
+                <button id="nextSlideBtn" class="footer-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span class="tooltip-text">Next Slide</span>
+            </div>
+            
+            <!-- Last slide button -->
+            <div class="footer-tooltip">
+                <button id="lastSlideBtn" class="footer-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <span class="tooltip-text">Last Slide</span>
+            </div>
+            
+            <!-- Theme toggle button -->
+            <div class="footer-tooltip">
+                <button id="themeBtn" class="footer-button">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <span class="tooltip-text">Toggle Theme</span>
+            </div>
+            
+            <!-- Notes button -->
+            <div class="footer-tooltip">
+                <button id="notesBtn" class="footer-button">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <span class="tooltip-text">Slide Notes</span>
+            </div>
+            
+            <!-- Fullscreen button -->
+            <div class="footer-tooltip">
+                <button id="fullscreenBtn" class="footer-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <span class="tooltip-text">Fullscreen</span>
+            </div>
+            
+            <!-- Menu dropdown -->
+            <div class="footer-dropdown">
+                <div class="footer-tooltip">
+                    <button id="menuBtn" class="footer-button">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="tooltip-text">Menu</span>
+                </div>
+                <div class="footer-dropdown-content">
+                    <a href="index.html">Home</a>
+                    <a href="slide_00_cover.html">Cover</a>
+                    <a href="slide_00_agenda.html">Agenda</a>
+                    <a href="slide_15_break.html">Break</a>
+                    <a href="slide_34_thank_you.html">Thank You</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Panel -->
+    <div id="notesPanel" class="notes-panel">
+        <div class="notes-panel-header">
+            <h3>Slide Notes</h3>
+            <button id="closeNotesBtn" class="footer-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notes-panel-content">
+            <textarea id="slideNotes" placeholder="Add your notes for this slide..."></textarea>
+        </div>
+    </div>
+
+    <!-- Initialize footer functionality -->
+    <script>
+        // Set current slide number and total
+        document.getElementById('currentSlideNum').textContent = 14;
+        document.getElementById('totalSlides').textContent = 36;
+        
+        // Update progress bar
+        document.getElementById('slideProgress').style.width = (14 / 36 * 100) + '%';
+        
+        // Close notes panel button
+        document.getElementById('closeNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesPanel').classList.remove('show');
+            document.getElementById('notesBtn').querySelector('i').className = 'fas fa-sticky-note';
+        });
+        
+        // Load saved notes if any
+        const slideId = window.location.pathname.split('/').pop().replace('.html', '');
+        const savedNotes = localStorage.getItem('slideNotes_' + slideId);
+        if (savedNotes) {
+            document.getElementById('slideNotes').value = savedNotes;
+        }
+        
+        // Save notes when changed
+        document.getElementById('slideNotes').addEventListener('input', function() {
+            localStorage.setItem('slideNotes_' + slideId, this.value);
+        });
+    </script>
+
+    <script src="js/responsive-footer-fixed.js"></script>
+    <script src="js/notes-panel-fixed.js"></script>
+
+    <!-- Navigation script -->
+    <script>
+        
+        
+        // Navigation script
+        document.getElementById('prevSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_11_game_board.html';
+        });
+        
+        document.getElementById('nextSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_13_game_ui.html';
+        });
+        
+        document.getElementById('firstSlideBtn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        document.getElementById('lastSlideBtn').addEventListener('click', function() {
+            window.location.href = 'slide_34_thank_you.html';
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                window.location.href = 'slide_13_game_ui.html';
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                window.location.href = 'slide_11_game_board.html';
+            } else if (e.key === 'Home') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'End') {
+                window.location.href = 'slide_34_thank_you.html';
+            }
+        });</script>
+</body>
+</html>
+
